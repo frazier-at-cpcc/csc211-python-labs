@@ -13,16 +13,42 @@
       "starter": "# Define LoginSession with __init__ storing host and user\n# Then create s = LoginSession(\"10.20.0.30\", \"admin\") and print s.host\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "10.20.0.30", "label": "prints the host 10.20.0.30"},
-        {"type": "source", "assert": "uses", "value": "class LoginSession", "label": "defines the LoginSession class"},
-        {"type": "source", "assert": "uses", "value": "__init__", "label": "defines __init__"},
-        {"type": "source", "assert": "uses", "value": "self.host", "label": "stores self.host"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "10.20.0.30",
+          "label": "prints the host 10.20.0.30"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "class LoginSession",
+          "label": "defines the LoginSession class"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "__init__",
+          "label": "defines __init__"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "self.host",
+          "label": "stores self.host"
+        }
       ],
       "hints": [
         "Start with `class LoginSession:` then indent `def __init__(self, host, user):` beneath it.",
         "Inside `__init__`, write `self.host = host` and `self.user = user` to save the values.",
         "Create an instance: `s = LoginSession(\"10.20.0.30\", \"admin\")`, then `print(s.host)`."
-      ]
+      ],
+      "lesson": {
+        "title": "Defining a class with __init__",
+        "body": "A **class** is a template that bundles related data and the operations on it into a single unit. When you call a class like a function — `LoginSession(\"10.20.0.30\", \"admin\")` — Python runs the special `__init__` method automatically and hands the new object to you. Inside `__init__`, the first parameter is always named `self`; it refers to the particular object being created and is passed automatically by Python. You use `self` to attach data to that object: writing `self.host = host` saves the argument in a named slot that persists on the object.\n\nThe result is an **object** — a specific instance of the class template. Every object created from the same class gets its own independent copy of the attributes, so two `LoginSession` objects with different hosts keep their data separate. You read an attribute with dot notation: `s.host` returns whatever was stored in `self.host` when that object was initialized. This is no different from the way you have already read `sock.family` on a socket or `result.stdout` on a subprocess result — Python's standard library is built on exactly the same mechanism.\n\nFor a security tool, bundling `host`, `user`, and eventually `cracked` into one object is cleaner than maintaining three parallel variables you must pass together everywhere. The object acts as the natural unit of a single login session, and as the session accumulates state across multiple attempts, the object carries it in one tidy package.",
+        "example": "class NetworkTarget:\n    def __init__(self, ip, port):\n        self.ip = ip\n        self.port = port\n\nt = NetworkTarget(\"192.168.1.1\", 22)\nprint(t.ip)",
+        "output": "192.168.1.1"
+      }
     },
     {
       "id": "w6-e2",
@@ -30,15 +56,36 @@
       "starter": "# Extend LoginSession: add self.attempts=0 and a try_login method\n# that increments self.attempts by 1 each call\n# Create s, call try_login twice, print s.attempts\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "2", "label": "prints 2 after two calls"},
-        {"type": "source", "assert": "defines", "value": "try_login", "label": "defines try_login method"},
-        {"type": "source", "assert": "uses", "value": "self.attempts", "label": "uses self.attempts"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "2",
+          "label": "prints 2 after two calls"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "try_login",
+          "label": "defines try_login method"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "self.attempts",
+          "label": "uses self.attempts"
+        }
       ],
       "hints": [
         "In `__init__`, add `self.attempts = 0` after the other attributes.",
         "Define `def try_login(self, pw):` inside the class (indented), and write `self.attempts += 1` inside it.",
         "After creating `s`, call `s.try_login(\"abc\")` twice, then `print(s.attempts)`."
-      ]
+      ],
+      "lesson": {
+        "title": "Methods that update object state",
+        "body": "A **method** is a function defined inside a class. Like `__init__`, it takes `self` as its first parameter, which gives it access to the object's attributes. Any method can both read and modify those attributes, and because every method of the same object shares the same `self`, they all operate on the same underlying data — calling `try_login` twenty times updates the same `attempts` counter.\n\nThe practical value here is **persistent state between calls**. A plain function returns a value and forgets everything else; a method acts on an object that remembers its history. When a brute-forcer loops through a password list, each call to `try_login` increments the same counter, so at the end of the loop `s.attempts` reflects the total number of tries across the entire run — something three loose variables could track but only messily. The object acts as a self-contained log of the session.\n\nNote that `self.attempts += 1` is shorthand for `self.attempts = self.attempts + 1` — it reads the current value, adds one, and writes the result back. This pattern appears throughout Python for accumulating counts, totals, or lengths, and you will use it any time a method needs to track how many times something has happened on that particular object.",
+        "example": "class Tally:\n    def __init__(self): self.count = 0\n    def mark(self): self.count += 1\n\nt = Tally()\nfor _ in range(2): t.mark()\nprint(t.count)",
+        "output": "2"
+      }
     },
     {
       "id": "w6-e3",
@@ -46,15 +93,36 @@
       "starter": "# Add self.cracked=False to __init__\n# In try_login, set self.cracked=True if pw == \"sunshine\"\n# Create s, call try_login(\"sunshine\"), print s.cracked\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "True", "label": "prints True after the correct password"},
-        {"type": "source", "assert": "uses", "value": "self.cracked", "label": "uses self.cracked"},
-        {"type": "source", "assert": "uses", "value": "sunshine", "label": "compares against sunshine"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "True",
+          "label": "prints True after the correct password"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "self.cracked",
+          "label": "uses self.cracked"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "sunshine",
+          "label": "compares against sunshine"
+        }
       ],
       "hints": [
         "In `__init__`, add `self.cracked = False`.",
         "Inside `try_login`, add `if pw == \"sunshine\": self.cracked = True`.",
         "After `s.try_login(\"sunshine\")`, print `s.cracked` — it should be `True`."
-      ]
+      ],
+      "lesson": {
+        "title": "Conditional state change inside a method",
+        "body": "A method can inspect its arguments and update the object's attributes conditionally, which is how an object models a transition — for instance, moving from `cracked = False` to `cracked = True` the moment the correct password is found. The attribute starts at a safe default in `__init__` and is only changed when the condition is met, giving the object a clear before/after state without any extra bookkeeping from the caller.\n\nThis pattern generalizes to any situation where an object tracks whether a threshold has been crossed: a scan finding an open port, a hash check succeeding, or a connection becoming authenticated. Initializing the flag to `False` in `__init__` is important — it guarantees the object is in a known state from the moment it is created, so no caller can accidentally see an uninitialized value.\n\nA common pitfall is forgetting that `==` (comparison) and `=` (assignment) are different operators. Inside `if pw == \"sunshine\":`, the double equals tests equality and does not change `pw`; the single equals on the next line assigns to `self.cracked`. Confusing the two is one of the most common beginner bugs in Python — the interpreter catches assignment inside an `if` condition as a syntax error, which is actually helpful, but the reverse mistake (using `==` where you meant `=`) fails silently and can be harder to spot.",
+        "example": "class Sensor:\n    def __init__(self): self.tripped = False\n    def check(self, v): self.tripped = (v > 90)\ns = Sensor()\ns.check(95)\nprint(s.tripped)",
+        "output": "True"
+      }
     },
     {
       "id": "w6-e4",
@@ -62,14 +130,35 @@
       "starter": "passwords = [\"letmein\", \"123456\", \"sunshine\", \"qwerty\"]\n\nclass LoginSession:\n    def __init__(self, host, user):\n        self.host = host\n        self.user = user\n        self.attempts = 0\n        self.cracked = False\n    def try_login(self, pw):\n        self.attempts += 1\n        if pw == \"sunshine\":\n            self.cracked = True\n        return self.cracked\n\n# Create s, loop passwords, break on success, print the recovered password\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "sunshine", "label": "prints the recovered password sunshine"},
-        {"type": "source", "assert": "uses", "value": "for", "label": "uses a for loop"},
-        {"type": "source", "assert": "uses", "value": "break", "label": "uses break to stop on success"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "sunshine",
+          "label": "prints the recovered password sunshine"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "for",
+          "label": "uses a for loop"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "break",
+          "label": "uses break to stop on success"
+        }
       ],
       "hints": [
         "Loop with `for pw in passwords:` and call `s.try_login(pw)` inside.",
         "Check `if s.cracked:` after the call, then `print(pw)` and `break`."
-      ]
+      ],
+      "lesson": {
+        "title": "Driving a class from a loop with early exit",
+        "body": "A brute-forcer has a simple structure: iterate through a list of candidates, test each one, and stop the moment a test succeeds. In Python, `break` exits the innermost loop immediately, which is the right tool here — once `s.cracked` is `True`, continuing to call `try_login` wastes attempts and, against a live service, generates unnecessary noise. The `break` also means the loop variable `pw` still holds the winning password when execution continues after the loop, so no separate variable is needed to carry it forward.\n\nBecause the class maintains state across calls, the loop itself stays clean: it does not need to accumulate results in a separate list or track the count manually. The object does that bookkeeping internally, and the loop's only responsibility is to drive it. This separation of concerns — the loop controls iteration, the object manages state — is the practical benefit of a class in a scripted attack tool.\n\nIn a real brute-forcer against a live service, the same pattern applies, though the `try_login` function makes a network call and wraps it in `try`/`except` to handle timeouts and connection resets. The loop structure shown here is identical; only the body of `try_login` changes from a string comparison to actual I/O. Building the logic around a mock check first, then swapping in the real one, is a practical development approach — it lets you confirm the loop and break logic are correct before adding the complexity of a live connection.",
+        "example": "services = [\"ftp\", \"ssh\", \"http\"]\ntarget = \"ssh\"\nfor svc in services:\n    if svc == target:\n        print(svc)\n        break",
+        "output": "ssh"
+      }
     },
     {
       "id": "w6-e5",
@@ -77,14 +166,35 @@
       "starter": "# subprocess is already available — no import needed\n# Run [\"whoami\"], capture output, print stdout stripped\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "labuser", "label": "prints labuser"},
-        {"type": "source", "assert": "calls", "value": "run", "label": "calls subprocess.run"},
-        {"type": "source", "assert": "uses", "value": "stdout", "label": "reads the stdout attribute"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "labuser",
+          "label": "prints labuser"
+        },
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "run",
+          "label": "calls subprocess.run"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "stdout",
+          "label": "reads the stdout attribute"
+        }
       ],
       "hints": [
         "`result = subprocess.run([\"whoami\"], capture_output=True, text=True)` runs the command.",
         "`result.stdout` holds the output string; call `.strip()` to remove the trailing newline before printing."
-      ]
+      ],
+      "lesson": {
+        "title": "Capturing program output with subprocess",
+        "body": "The **`subprocess`** module lets a Python program launch another program, pass it arguments, and capture what it prints to standard output. The call `subprocess.run([\"whoami\"], capture_output=True, text=True)` returns an object with three useful attributes: `stdout` (the program's printed output as a string), `stderr` (any error text), and `returncode` (0 for success, nonzero for failure). Passing the command as a **list** — `[\"whoami\"]` — is both the correct style and the safe one: each element is a distinct argument, which prevents a crafted input from being interpreted as additional shell commands.\n\n`capture_output=True` is required; without it, the child process inherits your terminal and its output goes directly to the screen rather than into `result.stdout`. `text=True` decodes the bytes the OS returns into a Python string; omitting it means `stdout` is a `bytes` object and you must call `.decode()` yourself. The `.strip()` call removes the trailing newline that most command-line programs append, so you get a clean string rather than `\"labuser\\n\"`.\n\nIn security work, `subprocess` is the bridge between Python and the specialized programs already on a Kali system — scanners, password utilities, network tools. Rather than rewriting those tools in Python, you call them, capture their output, and let Python decide what to do: branch on the result, parse fields from it, or format it into a report. It is also, on the target side of a shell, the mechanism that executes received commands — a reverse shell receives a string from the socket, passes it to `subprocess.run`, and sends back `result.stdout`. Because the exercise environment mocks `subprocess`, a comparable pattern in pure Python uses a simple class to model the same `stdout` / `returncode` interface that `subprocess.run` returns in real code.",
+        "example": "class Result:\n    def __init__(self, out, rc=0):\n        self.stdout = out\n        self.returncode = rc\n\nresult = Result(\"target-box\\n\")\nprint(result.stdout.strip())",
+        "output": "target-box"
+      }
     }
   ],
   "stretch": [
@@ -94,13 +204,29 @@
       "starter": "passwords = [\"letmein\", \"123456\", \"sunshine\", \"qwerty\"]\n\nclass LoginSession:\n    def __init__(self, host, user):\n        self.host = host\n        self.user = user\n        self.attempts = 0\n        self.cracked = False\n    def try_login(self, pw):\n        self.attempts += 1\n        if pw == \"sunshine\":\n            self.cracked = True\n        return self.cracked\n\n# Loop passwords, break on success, print how many attempts it took\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "Recovered in 3 attempt(s)", "label": "reports 3 attempts to recover sunshine"},
-        {"type": "source", "assert": "uses", "value": "attempts", "label": "reads the attempts attribute"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "Recovered in 3 attempt(s)",
+          "label": "reports 3 attempts to recover sunshine"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "attempts",
+          "label": "reads the attempts attribute"
+        }
       ],
       "hints": [
         "After breaking the loop, `s.attempts` holds the total tries.",
         "Print with an f-string: `print(f\"Recovered in {s.attempts} attempt(s)\")`."
-      ]
+      ],
+      "lesson": {
+        "title": "Reading object state after a loop",
+        "body": "Because `s.attempts` is updated by every call to `try_login`, it accurately reflects the total number of attempts when the loop exits — whether it exits by `break` (success) or by exhausting the list (failure). After a `break`, the object has already counted the winning try, so `s.attempts` includes it. This means you do not need a separate counter variable alongside the loop; the object itself is the record.\n\nFormatting the count in a human-readable message is a reporting concern, not a computation one: an f-string with a literal label and the attribute value gives a result any reader can interpret immediately. Using `attempt(s)` with the parenthetical `s` is a convention for messages that could be either singular or plural; if exactness matters, a ternary expression such as `\"attempt\" if s.attempts == 1 else \"attempts\"` is the idiomatic Python way to handle it.\n\nThis exercise illustrates a broader principle: when a class tracks state internally, the caller does not need to duplicate that tracking externally. A session object that counts its own attempts, records success or failure, and carries the host and username is a self-contained evidence record — useful not just for controlling the loop but for writing the finding to a log or report afterward without passing multiple variables around.",
+        "example": "items = [\"alpha\", \"beta\", \"gamma\"]\ntries = 0\nfor item in items:\n    tries += 1\n    if item == \"beta\": break\nprint(f\"Found in {tries} attempt(s)\")",
+        "output": "Found in 2 attempt(s)"
+      }
     }
   ]
 }

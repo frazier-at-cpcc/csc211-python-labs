@@ -10,10 +10,29 @@
       "starter": "# define square and call it with 9\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "81", "label": "prints 81"},
-        {"type": "source", "assert": "defines", "value": "square", "label": "defines a function square"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "81",
+          "label": "prints 81"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "square",
+          "label": "defines a function square"
+        }
       ],
-      "hints": ["Use `def square(n):` to define it.", "Return the result with `return n*n`."]
+      "hints": [
+        "Use `def square(n):` to define it.",
+        "Return the result with `return n*n`."
+      ],
+      "lesson": {
+        "title": "Defining functions with def and return",
+        "body": "A **function** is a named block of logic that you write once and invoke wherever needed. The `def` keyword opens the definition: `def square(n):` declares a function named `square` that accepts one **parameter**, `n`. The body — everything indented beneath the `def` line — describes what the function does. Nothing in that body executes until the function is *called* by writing its name with an argument inside parentheses, such as `square(9)`.\n\nThe `return` statement hands a value back to the caller. Without it, the function runs its body and gives back `None`, which is rarely what you want for a computation. Writing `return n * n` means the expression `square(9)` evaluates to `81` and can be stored, printed, or passed to another function. Think of `def` as writing a recipe and `return` as the dish the recipe produces; calling the function is cooking that dish for a specific set of ingredients.\n\nIn security tooling, functions are not a style preference — they are a structural necessity. A port scanner's core check, a credential validator, or a hash comparison will each be invoked dozens or thousands of times in a loop. Writing that logic once in a function and calling it in the loop means that if the logic needs correcting, there is exactly one place to change it. Functions also make programs readable at a glance: a loop that calls `check_port(host, port)` announces what it does without burying the reader in socket mechanics.",
+        "example": "def clamp(value, maximum):\n    if value > maximum:\n        return maximum\n    return value\n\nprint(clamp(120, 100))",
+        "output": "100"
+      }
     },
     {
       "id": "w3-e2",
@@ -21,10 +40,29 @@
       "starter": "# define is_even and print the results\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "True\nFalse", "label": "prints True then False"},
-        {"type": "source", "assert": "defines", "value": "is_even", "label": "defines a function is_even"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "True\nFalse",
+          "label": "prints True then False"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "is_even",
+          "label": "defines a function is_even"
+        }
       ],
-      "hints": ["Return `n % 2 == 0` to check if even.", "Print each call directly: `print(is_even(4))` then `print(is_even(7))`."]
+      "hints": [
+        "Return `n % 2 == 0` to check if even.",
+        "Print each call directly: `print(is_even(4))` then `print(is_even(7))`."
+      ],
+      "lesson": {
+        "title": "Boolean-returning functions and the modulo operator",
+        "body": "A function can return a **Boolean** — `True` or `False` — to answer a yes/no question. This pattern is common in tooling: `is_open(port)`, `is_valid_ip(addr)`, `is_privileged(port_number)`. The caller receives a value it can drop directly into an `if` statement or store in a variable, keeping the decision logic separated from the test logic.\n\nThe **modulo operator** `%` yields the remainder after integer division. `n % 2` is `0` for any even number and `1` for any odd one, so the expression `n % 2 == 0` is already a Boolean — it evaluates to `True` or `False` without needing an explicit `if`. Returning that expression directly, `return n % 2 == 0`, is both concise and precise. In security contexts, modulo appears in checksum computations, CRC checks, and any situation involving cyclic arithmetic.\n\nA subtle pitfall with Boolean-returning functions is the temptation to write `return True` and `return False` in separate branches when a single expression would suffice. The two-branch form works correctly but is more verbose and introduces an opportunity for the branches to diverge — for example, if `==` is accidentally changed to `is` in one branch only. Returning the comparison directly eliminates that risk. More broadly, the habit of asking a function to answer a single question and return one value makes that function testable in isolation: given a specific input, the output is deterministic and can be verified immediately.",
+        "example": "def is_privileged(port):\n    return port < 1024\n\nprint(is_privileged(80))\nprint(is_privileged(8080))",
+        "output": "True\nFalse"
+      }
     },
     {
       "id": "w3-e3",
@@ -32,10 +70,29 @@
       "starter": "# import math and print sqrt(16)\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "4.0", "label": "prints 4.0"},
-        {"type": "source", "assert": "uses", "value": "import", "label": "uses import statement"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "4.0",
+          "label": "prints 4.0"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "import",
+          "label": "uses import statement"
+        }
       ],
-      "hints": ["Start with `import math`.", "Use `math.sqrt()` to get the square root."]
+      "hints": [
+        "Start with `import math`.",
+        "Use `math.sqrt()` to get the square root."
+      ],
+      "lesson": {
+        "title": "Importing modules from the standard library",
+        "body": "Python's **standard library** is a large collection of pre-written code organized into **modules** — each module covering a specific domain such as mathematics, file paths, or networking. A module is made available to your program with the `import` statement, written at the top of the file by convention. After `import math`, every function and constant in the `math` module is accessible through **dot notation**: `math.sqrt`, `math.pi`, `math.floor`.\n\nDot notation is deliberate: it keeps the module's names from colliding with names you define yourself. If you wrote a function called `sqrt` in your own program and also imported `math`, they would coexist without conflict because yours is `sqrt` and the library's is `math.sqrt`. This namespacing is a small detail that becomes important as programs grow and pull in several modules simultaneously.\n\nThe standard library is why Python is described as a \"batteries included\" language. Cryptographic hashing (`hashlib`), regular expressions (`re`), date arithmetic (`datetime`), file path manipulation (`pathlib`), and network sockets (`socket`) are all available without any third-party installation. For a security practitioner this matters practically: on a locked-down or air-gapped machine where you cannot install packages, the standard library may be all you have, and knowing what it contains determines what you can build. Learning to reach for `import` before writing something from scratch is one of the most productive habits you can develop.",
+        "example": "import math\n\nprint(math.floor(7.9))\nprint(math.ceil(7.1))",
+        "output": "7\n8"
+      }
     },
     {
       "id": "w3-e4",
@@ -43,11 +100,35 @@
       "starter": "# wrap int(\"abc\") in try/except and print the message\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "bad number", "label": "prints bad number"},
-        {"type": "source", "assert": "uses", "value": "try", "label": "uses try block"},
-        {"type": "source", "assert": "uses", "value": "except", "label": "uses except block"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "bad number",
+          "label": "prints bad number"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "try",
+          "label": "uses try block"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "except",
+          "label": "uses except block"
+        }
       ],
-      "hints": ["Put `int(\"abc\")` inside a `try:` block.", "Catch `ValueError` with `except ValueError:`."]
+      "hints": [
+        "Put `int(\"abc\")` inside a `try:` block.",
+        "Catch `ValueError` with `except ValueError:`."
+      ],
+      "lesson": {
+        "title": "Handling errors gracefully with try/except",
+        "body": "Any operation that can fail — converting text to a number, opening a file, resolving a hostname — will eventually receive bad input. Without protection, Python raises an **exception**, prints a traceback, and halts the program. The `try`/`except` construct intercepts named exceptions and transfers control to the `except` block instead of crashing, allowing the program to respond and continue.\n\nThe structure is explicit: the code you believe might fail goes inside `try:`, and the recovery logic goes inside `except SomeError:`. Python executes the `try` block and, if the named exception is raised, jumps immediately to the `except` block, skipping any remaining lines in `try`. If no exception occurs, the `except` block is skipped entirely. Naming the specific exception you expect — `ValueError`, `FileNotFoundError`, `socket.gaierror` — rather than using a bare `except:` is important: a bare `except` silently catches everything, including programming mistakes that should surface as errors during development.\n\nIn network code, error handling is not defensive programming added later — it is a requirement from the first line. A scanner probing hundreds of ports across a range of hosts will encounter refused connections, timeouts, unreachable hosts, and unresolvable names as routine events, not exceptional ones. A scanner that crashes on the first failed connection is useless. `try`/`except` turns expected failures into logged events and keeps the program running through the rest of the scan. This pattern — anticipate failure, handle it deliberately, keep moving — is characteristic of professional tooling in any domain where external systems are involved.",
+        "example": "for token in [\"443\", \"ssh\", \"22\"]:\n    try:\n        print(int(token))\n    except ValueError:\n        print(f\"not a number: {token}\")",
+        "output": "443\nnot a number: ssh\n22"
+      }
     },
     {
       "id": "w3-e5",
@@ -55,11 +136,35 @@
       "starter": "# define first_word and call it\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "nmap", "label": "prints nmap"},
-        {"type": "source", "assert": "defines", "value": "first_word", "label": "defines a function first_word"},
-        {"type": "source", "assert": "calls", "value": "split", "label": "calls split method"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "nmap",
+          "label": "prints nmap"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "first_word",
+          "label": "defines a function first_word"
+        },
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "split",
+          "label": "calls split method"
+        }
       ],
-      "hints": ["Use `line.split()` to break the line into words.", "Return the first element with `[0]`."]
+      "hints": [
+        "Use `line.split()` to break the line into words.",
+        "Return the first element with `[0]`."
+      ],
+      "lesson": {
+        "title": "String splitting and indexing inside functions",
+        "body": "The `str.split()` method breaks a string into a **list** of substrings. Called without arguments it splits on any whitespace and discards the whitespace, so `\"nmap -sV host\".split()` produces `[\"nmap\", \"-sV\", \"host\"]`. Once you have a list, individual elements are retrieved by **index** — `[0]` for the first, `[1]` for the second, and so on. Combining split and indexing in a function is a clean way to extract a specific field from a line of structured text.\n\nThis capability is directly applicable to parsing tool output. `nmap`, system logs, and configuration files all present data as lines of space-separated or delimited text. A function that extracts the command name, an IP address, or a status word from such a line can be called in a loop over every line of output, turning raw text into structured data you can reason about. The `split` method also accepts a **delimiter** argument: `line.split(\":\")` splits on colons, which is how `/etc/passwd` is structured.\n\nA pitfall worth noting: calling `split()` on an empty string returns an empty list, so `\"\".split()[0]` raises an `IndexError`. If the input might be blank — a realistic concern when reading lines from a file — guard the call with a length check or wrap it in `try`/`except IndexError`. Defensive string parsing is a habit that prevents silent data loss when a log file contains a malformed or empty line, which logs routinely do.",
+        "example": "def last_field(line):\n    parts = line.split()\n    return parts[-1]\n\nprint(last_field(\"open tcp 22 ssh\"))",
+        "output": "ssh"
+      }
     }
   ],
   "stretch": [
@@ -69,10 +174,29 @@
       "starter": "# define line_count and call it with a multi-line string\ntext = \"line one\\nline two\\nline three\\nline four\"\n# call and print the count\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "4", "label": "prints 4"},
-        {"type": "source", "assert": "defines", "value": "line_count", "label": "defines a function line_count"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "4",
+          "label": "prints 4"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "line_count",
+          "label": "defines a function line_count"
+        }
       ],
-      "hints": ["Split the text by newline with `text.split('\\n')`.", "Return the length of the resulting list."]
+      "hints": [
+        "Split the text by newline with `text.split('\\n')`.",
+        "Return the length of the resulting list."
+      ],
+      "lesson": {
+        "title": "Counting lines in a multi-line string",
+        "body": "A multi-line string in Python is a single string value that contains one or more newline characters (`\\n`). Splitting on `\\n` converts it into a list of individual lines, and `len()` of that list gives the line count. The pattern `len(text.split(\"\\n\"))` is concise and correct for strings that terminate without a trailing newline.\n\nEncapsulating this logic in a function with a clear name — `line_count`, `count_entries`, `tally_results` — means the caller does not need to remember the split-then-len idiom each time. The function can also be extended later to skip blank lines or comment lines without changing any of its callers. That extensibility is the practical value of wrapping even a short operation in a named function: the name documents intent, and the boundary allows the implementation to change without propagating changes outward.\n\nLog analysis is a central activity in incident response and penetration test reporting. A scanner's output, a server's access log, or a list of flagged hosts all arrive as multi-line text. Being able to count, filter, or extract from those lines programmatically — rather than eyeballing them — is the difference between a workflow that scales to a few dozen lines and one that handles thousands. The functions you write in this exercise are direct ancestors of the log-parsing utilities you will build in later weeks.",
+        "example": "def count_entries(log):\n    return len(log.split(\"\\n\"))\n\nsample = \"GET /login 200\\nGET /admin 403\\nPOST /login 200\"\nprint(count_entries(sample))",
+        "output": "3"
+      }
     }
   ]
 }

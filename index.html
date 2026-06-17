@@ -20,10 +20,12 @@
 
   <main class="wrap">
     <section class="note" aria-label="About these labs">
-      <p><strong>How it works.</strong> Each lab runs a real Python interpreter
-        (<a href="https://pyodide.org">Pyodide</a>) entirely in your browser. Type a solution,
-        press <em>Run</em> to see the output, and <em>Check</em> to grade it against the exercise's
-        goals. Work through them in order — each week assumes only what earlier weeks introduced.</p>
+      <p><strong>How it works.</strong> Each week steps through short <em>lessons</em> and
+        hands-on <em>challenges</em>, one per page. A lesson teaches the concept with a worked
+        example; the challenge then has you write real Python — press <em>Run</em> to see the
+        output and <em>Check</em> to grade it. Code runs entirely in your browser via
+        <a href="https://pyodide.org">Pyodide</a>. Work through the weeks in order — each assumes
+        only what earlier weeks introduced.</p>
       <p class="firstload">The first lab you open downloads the Python runtime (a few seconds);
         after that it is instant.</p>
     </section>
@@ -55,17 +57,21 @@
       grid.innerHTML = '';
       for (const lab of labs) {
         const wk = String(lab.week).padStart(2, '0');
-        const done = (() => { try { return localStorage.getItem(`csc211-lab-${wk}`) === 'passed'; } catch (_) { return false; } })();
+        const prog = (() => { try { return JSON.parse(localStorage.getItem(`csc211-week-${wk}`)) || {}; } catch (_) { return {}; } })();
+        const passedRequired = prog.passedRequired || 0;
+        const done = passedRequired >= lab.required;
+        const started = !done && (prog.lastStep || passedRequired);
         // strip the shared "Core Python — " prefix for a tighter card title
         const topic = lab.title.replace(/^Core Python\s*[—-]\s*/, '');
         const li = document.createElement('li');
         li.className = 'card' + (done ? ' done' : '');
         const a = document.createElement('a');
-        a.href = `lab.html?week=${lab.week}`;
+        a.href = `lab.html?week=${lab.week}&step=1`;
+        const progressNote = done ? '' : (started ? ` · in progress (${passedRequired}/${lab.required})` : '');
         a.innerHTML = `
           <span class="badge">Week ${lab.week}${done ? ' <span class="tick" title="completed">✓</span>' : ''}</span>
           <span class="topic"></span>
-          <span class="meta">${lab.required} exercises${lab.stretch ? ` · ${lab.stretch} stretch` : ''}</span>`;
+          <span class="meta">${lab.required} lessons + challenges${lab.stretch ? ` · ${lab.stretch} stretch` : ''}${progressNote}</span>`;
         a.querySelector('.topic').textContent = topic;
         li.appendChild(a);
         grid.appendChild(li);

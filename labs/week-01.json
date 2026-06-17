@@ -10,9 +10,23 @@
       "starter": "# Print the banner\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "========================\n   Recon Report", "label": "prints the exact banner with correct spacing"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "========================\n   Recon Report",
+          "label": "prints the exact banner with correct spacing"
+        }
       ],
-      "hints": ["Use two print statements.", "Type the text exactly as shown — spaces matter."]
+      "hints": [
+        "Use two print statements.",
+        "Type the text exactly as shown — spaces matter."
+      ],
+      "lesson": {
+        "title": "Showing output with print()",
+        "body": "`print()` is how a program shows output to the screen. You hand it a value — usually a string of text wrapped in quotes — and it writes that value followed by a newline, so each `print()` call lands on its own line.\n\nWhatever sits between the quotes is printed exactly, character for character. Spaces count: `print(\"  indented\")` keeps its two leading spaces, which is how you align or indent text by hand. Single and double quotes both work as long as the opening and closing marks match.\n\nCalling `print()` several times in a row stacks the lines in the order they run. Printing an empty string, `print(\"\")`, adds a blank line. Reading output carefully is a core skill — every tool you build this term reports its findings through `print()`.",
+        "example": "print(\"Target host\")\nprint(\"  status: up\")",
+        "output": "Target host\n  status: up"
+      }
     },
     {
       "id": "w1-e2",
@@ -20,10 +34,28 @@
       "starter": "# Set name and greet\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "Hello, Maya.", "label": "prints the greeting with the correct name"},
-        {"type": "state", "name": "name", "equals": "Maya", "label": "name variable is set to Maya"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "Hello, Maya.",
+          "label": "prints the greeting with the correct name"
+        },
+        {
+          "type": "state",
+          "name": "name",
+          "equals": "Maya",
+          "label": "name variable is set to Maya"
+        }
       ],
-      "hints": ["An f-string starts with an `f` before the quote: f\"Hello, {name}.\""]
+      "hints": [
+        "An f-string starts with an `f` before the quote: f\"Hello, {name}.\""
+      ],
+      "lesson": {
+        "title": "Variables and f-strings",
+        "body": "A variable is a name that stores a value so you can reuse it later. You create one with an assignment: a name on the left, an `=`, and a value on the right — for example `port = 80` or `service = \"ssh\"`. From then on, writing the name gives back the value it holds, and you can reassign it at any time.\n\nAn f-string builds text with values dropped into it. Put the letter `f` immediately before the opening quote, then wrap any variable in curly braces `{ }`. Python replaces `{service}` with that variable's current value, while everything outside the braces is printed literally.\n\nf-strings are the clearest way to combine fixed wording with changing data — far more readable than joining fragments by hand. A placeholder can hold any variable or even a small expression, not just strings.",
+        "example": "service = \"ssh\"\nprint(f\"Found {service} running\")",
+        "output": "Found ssh running"
+      }
     },
     {
       "id": "w1-e3",
@@ -31,10 +63,29 @@
       "starter": "# Calculate ports and print\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "22 ports", "label": "prints 22 ports with the calculated value"},
-        {"type": "state", "name": "ports", "equals": 22, "label": "ports variable equals 22"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "22 ports",
+          "label": "prints 22 ports with the calculated value"
+        },
+        {
+          "type": "state",
+          "name": "ports",
+          "equals": 22,
+          "label": "ports variable equals 22"
+        }
       ],
-      "hints": ["Write: ports = 20 + 2", "Then print with an f-string: f\"{ports} ports\""]
+      "hints": [
+        "Write: ports = 20 + 2",
+        "Then print with an f-string: f\"{ports} ports\""
+      ],
+      "lesson": {
+        "title": "Numbers and arithmetic",
+        "body": "Python works with numbers directly, with no quotes around them. The arithmetic operators are `+` (add), `-` (subtract), `*` (multiply), and `/` (divide), and they follow ordinary math precedence, so multiplication happens before addition unless you add parentheses.\n\nA number and a string are different types, and that difference matters. `20 + 2` evaluates to the number `22`, but `\"20\" + \"2\"` joins two strings into `\"202\"`. Keep any value you intend to compute with as a number rather than text.\n\nYou can place a calculation directly inside an f-string's braces, such as `f\"{8 * 4} bytes\"`, and Python prints the computed result. That is convenient for reporting counts, totals, and sizes in a tool's output.",
+        "example": "hosts = 6\nprint(f\"{hosts * 2} interfaces\")",
+        "output": "12 interfaces"
+      }
     },
     {
       "id": "w1-e4",
@@ -42,11 +93,35 @@
       "starter": "first = \"Ada\"\nlast = \"Lovelace\"\n# Print last name, first name\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "Lovelace, Ada", "label": "prints last name followed by first name"},
-        {"type": "source", "assert": "uses", "value": "first", "label": "uses the first variable"},
-        {"type": "source", "assert": "uses", "value": "last", "label": "uses the last variable"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "Lovelace, Ada",
+          "label": "prints last name followed by first name"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "first",
+          "label": "uses the first variable"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "last",
+          "label": "uses the last variable"
+        }
       ],
-      "hints": ["You can join strings: last + \", \" + first", "Or use an f-string: f\"{last}, {first}\""]
+      "hints": [
+        "You can join strings: last + \", \" + first",
+        "Or use an f-string: f\"{last}, {first}\""
+      ],
+      "lesson": {
+        "title": "Assembling strings in order",
+        "body": "Often you need to build one string from several values arranged in a particular order. With an f-string you list each variable in its own `{ }` and place literal text — spaces, commas, separators — between the braces exactly where it should appear in the output.\n\nThe order inside the f-string is the order that prints; you are not bound to the order the variables were created. `f\"{b}, {a}\"` prints `b` before `a` even if `a` was defined first, which lets you reformat data however a report needs it.\n\nYou can also concatenate with the `+` operator, as in `a + \", \" + b`, but `+` only joins strings — mixing in a number raises a `TypeError`. f-strings sidestep that pitfall, which is why they are usually the better tool for formatting.",
+        "example": "user = \"root\"\nhost = \"db01\"\nprint(f\"{user}@{host}\")",
+        "output": "root@db01"
+      }
     },
     {
       "id": "w1-e5",
@@ -54,10 +129,29 @@
       "starter": "# Convert and print\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "444", "label": "prints 444 (count plus one)"},
-        {"type": "state", "name": "count", "isType": "int", "label": "count is an integer type"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "444",
+          "label": "prints 444 (count plus one)"
+        },
+        {
+          "type": "state",
+          "name": "count",
+          "isType": "int",
+          "label": "count is an integer type"
+        }
       ],
-      "hints": ["Use int() to convert text to a number: count = int(\"443\")", "Then print: print(f\"{count + 1}\")"]
+      "hints": [
+        "Use int() to convert text to a number: count = int(\"443\")",
+        "Then print: print(f\"{count + 1}\")"
+      ],
+      "lesson": {
+        "title": "Converting text to numbers with int()",
+        "body": "Text and numbers are distinct types, and digits inside quotes are text. `\"443\"` is a string of three characters, not the value four hundred forty-three, and you cannot do arithmetic on it while it stays a string.\n\n`int()` converts a string of digits into an integer you can compute with: `int(\"443\")` produces the number `443`, and adding `1` then gives `444`. The opposite conversion, `str()`, turns a number back into text — useful when you want to join it onto other strings.\n\nThis conversion comes up constantly in security work. Data read from user input, a file, or the network arrives as text first, so ports, counts, and status codes usually need an `int()` before you can add, compare, or sort them numerically.",
+        "example": "n = int(\"100\")\nprint(n + 5)",
+        "output": "105"
+      }
     }
   ],
   "stretch": [
@@ -67,9 +161,22 @@
       "starter": "# Build and print the profile line\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "Jordan | analyst | SEC-001", "label": "prints the profile line with correct pipes and spacing"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "Jordan | analyst | SEC-001",
+          "label": "prints the profile line with correct pipes and spacing"
+        }
       ],
-      "hints": ["Build it in one line with an f-string: f\"{name} | {role} | {id}\""]
+      "hints": [
+        "Build it in one line with an f-string: f\"{name} | {role} | {id}\""
+      ],
+      "lesson": {
+        "title": "Formatting several variables at once",
+        "body": "Real tools rarely report a single value — they format several facts into one readable line. Store each fact in its own clearly named variable first; good names make the code read like documentation and are easier to change later.\n\nA single f-string can contain as many `{ }` placeholders as you need, in any order, with literal labels and separators between them. Keeping all the formatting in one f-string makes the output easy to read and adjust in one place.\n\nComposing a tidy summary line from labeled variables is the foundation of the reporting you will do throughout the course — from host profiles to scan results to the final engagement report.",
+        "example": "host = \"web01\"\nport = 443\nstate = \"open\"\nprint(f\"{host}:{port} {state}\")",
+        "output": "web01:443 open"
+      }
     }
   ]
 }

@@ -10,10 +10,29 @@
       "starter": "# build a bytes buffer by repeating b\"A\" 8 times\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "8", "label": "prints the length 8"},
-        {"type": "source", "assert": "uses", "value": "len", "label": "uses len() to get buffer length"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "8",
+          "label": "prints the length 8"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "len",
+          "label": "uses len() to get buffer length"
+        }
       ],
-      "hints": ["Multiply a bytes literal by a number: `b\"A\" * 8`", "Then use `len(buf)` to get its length."]
+      "hints": [
+        "Multiply a bytes literal by a number: `b\"A\" * 8`",
+        "Then use `len(buf)` to get its length."
+      ],
+      "lesson": {
+        "title": "Bytes literals and buffer sizing",
+        "body": "A **bytes object** in Python is an immutable sequence of integers, each in the range 0–255, representing raw binary data. Unlike a string, which encodes human-readable text, a bytes literal prefixed with `b` is a precise sequence of octets — exactly what a network socket, a file on disk, or a program's memory holds. Exploit payloads are bytes objects from start to finish because every byte must land in the target's memory at the *exact* position the technique requires.\n\nThe repetition operator `*` applied to a bytes literal produces a new bytes object of exactly that length. `b\"A\" * 8` constructs eight bytes, each holding the value `0x41` (the ASCII code for the uppercase letter A). The `len()` built-in then counts those bytes. These two primitives — repetition and length inspection — are the first tools in payload construction: you use them to build filler buffers whose size you can verify before sending anything over the wire.\n\nIn a buffer-overflow workflow, the filler section that precedes your EIP overwrite must be *exactly* the right number of bytes; one byte over or under and your four-byte EIP value straddles the wrong boundary, and the crash tells you nothing useful. Printing `len(buf)` before sending is not bookkeeping — it is the confirmation that your construction is correct.",
+        "example": "buf = b\"B\" * 12\nprint(len(buf))",
+        "output": "12"
+      }
     },
     {
       "id": "w7-e2",
@@ -21,11 +40,35 @@
       "starter": "# pack a 32-bit integer and print its length\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "4", "label": "prints the length 4"},
-        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack"},
-        {"type": "source", "assert": "uses", "value": "import struct", "label": "imports struct"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "4",
+          "label": "prints the length 4"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "struct.pack",
+          "label": "uses struct.pack"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "import struct",
+          "label": "imports struct"
+        }
       ],
-      "hints": ["Import struct: `import struct`", "`struct.pack(\"<I\", 1)` packs a 32-bit little-endian integer (always 4 bytes)."]
+      "hints": [
+        "Import struct: `import struct`",
+        "`struct.pack(\"<I\", 1)` packs a 32-bit little-endian integer (always 4 bytes)."
+      ],
+      "lesson": {
+        "title": "struct.pack and fixed-width binary integers",
+        "body": "The `struct` module translates between Python values and the raw byte representations that C programs, file formats, and network protocols actually store. Its core function, `struct.pack(fmt, value)`, takes a **format string** and a value and returns a `bytes` object of exactly the size the format specifies. The format `\"<I\"` means: one **unsigned 32-bit integer**, laid out in **little-endian** byte order — least significant byte first, which is how x86 processors store multi-byte values in memory.\n\nThe result is always exactly four bytes, regardless of how small the number is. `struct.pack(\"<I\", 0)` still produces `b'\\x00\\x00\\x00\\x00'` — four bytes of zeros. Knowing that `struct.pack(\"<I\", ...)` always produces a 4-byte object lets you reason precisely about payload layout: a filler section of `n` bytes followed by one packed address is always `n + 4` bytes total.\n\nThe `<` prefix matters: without it, Python's default byte order may not match the target architecture, and an address or integer that looks correct as a number will arrive in memory with its bytes scrambled. In 32-bit x86 exploitation, the `<I` format string is the one idiom to commit to memory and use every time.",
+        "example": "import struct\npacked = struct.pack(\"<I\", 305419896)\nprint(len(packed))",
+        "output": "4"
+      }
     },
     {
       "id": "w7-e3",
@@ -33,10 +76,29 @@
       "starter": "import struct\n# pack 0x625011AF and print its hex\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "af115062", "label": "prints the hex 'af115062' (little-endian)"},
-        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "af115062",
+          "label": "prints the hex 'af115062' (little-endian)"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "struct.pack",
+          "label": "uses struct.pack"
+        }
       ],
-      "hints": ["Little-endian means bytes are reversed: `0x625011AF` becomes `af 11 50 62`.", "Use `.hex()` to convert bytes to a hex string: `packed.hex()`"]
+      "hints": [
+        "Little-endian means bytes are reversed: `0x625011AF` becomes `af 11 50 62`.",
+        "Use `.hex()` to convert bytes to a hex string: `packed.hex()`"
+      ],
+      "lesson": {
+        "title": "Little-endian byte order and hex representation",
+        "body": "**Endianness** is the rule that determines which byte of a multi-byte integer is stored at the lowest memory address. On little-endian systems — which includes all x86 and x86-64 processors — the *least significant* byte comes first. For the 32-bit address `0x625011AF`, the least significant byte is `0xAF`, so the four bytes in memory, from low to high address, are `AF 11 50 62`. This reversal from the way humans write hexadecimal numbers is the most common source of silent errors in exploit construction: the payload reaches the target, no byte is lost in transit, and the crash still shows nonsense in EIP because the address bytes arrived in the wrong order.\n\nThe `.hex()` method on any bytes object returns a lowercase hexadecimal string with no spaces or separators, two characters per byte. Calling `.hex()` on a packed address is the standard way to verify endianness before sending: if `struct.pack(\"<I\", 0x625011AF).hex()` produces `af115062`, the reversal is correct. If it produced `625011af`, the format string was big-endian (`\">I\"`) and the exploit would jump to the wrong location.\n\nDeveloping the habit of printing `.hex()` to confirm byte order at every stage — address packing, bad-character buffers, shellcode — costs seconds and prevents hours of confusion. Exploit development is a precision discipline, and `.hex()` is the easiest way to hold yourself accountable to that precision.",
+        "example": "import struct\npacked = struct.pack(\"<I\", 0xDEADBEEF)\nprint(packed.hex())",
+        "output": "efbeadde"
+      }
     },
     {
       "id": "w7-e4",
@@ -44,10 +106,29 @@
       "starter": "import struct\n# build the payload and print its length\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "12", "label": "prints the length 12"},
-        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack in payload"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "12",
+          "label": "prints the length 12"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "struct.pack",
+          "label": "uses struct.pack in payload"
+        }
       ],
-      "hints": ["Concatenate bytes with `+`: first 4 A's, then the packed 4 bytes, then 4 C's.", "Total: 4 + 4 + 4 = 12 bytes."]
+      "hints": [
+        "Concatenate bytes with `+`: first 4 A's, then the packed 4 bytes, then 4 C's.",
+        "Total: 4 + 4 + 4 = 12 bytes."
+      ],
+      "lesson": {
+        "title": "Payload assembly by bytes concatenation",
+        "body": "A complete exploit payload is a single bytes object built by concatenating several sections, each with a specific role. The `+` operator on bytes objects joins them left-to-right with no separator, producing one contiguous sequence of octets. This is the mechanism behind every stage of payload construction: filler up to the offset, then the packed return address, then a NOP sled, then shellcode — all concatenated into one `bytes` value that the socket sends as an unbroken stream.\n\nEach section in the concatenation can be inspected independently before assembly. Checking the section lengths and hex values before combining them makes errors easy to locate; checking only the final payload when something goes wrong forces you to unravel the construction mentally under pressure. Keeping each part in a named variable — `filler`, `eip`, `sled`, `shellcode` — and then combining them at the end also documents the payload structure in the code itself, which matters when you return to a script days later or hand it to a colleague.\n\nThe arithmetic of payload sizing is part of the technique: `len(b\"A\" * 4 + struct.pack(\"<I\", 0xDEADBEEF) + b\"C\" * 4)` must equal `4 + 4 + 4 = 12`. Verifying this before sending prevents the class of error where a section is off by one byte and EIP receives three bytes of your intended value plus one byte of the next section.",
+        "example": "import struct\nheader = b\"\\x90\" * 4\naddr = struct.pack(\"<I\", 0x11223344)\ntrailer = b\"\\xcc\" * 4\npayload = header + addr + trailer\nprint(len(payload))",
+        "output": "12"
+      }
     },
     {
       "id": "w7-e5",
@@ -55,10 +136,29 @@
       "starter": "# build a cyclic pattern and print its first 4 bytes\npattern = b\"\".join([f\"A{i}\".encode() for i in range(10)] + [f\"B{i}\".encode() for i in range(6)])\n# print the first 4 bytes\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "A0A1", "label": "prints the first 4 bytes 'A0A1'"},
-        {"type": "source", "assert": "uses", "value": "decode", "label": "uses .decode() to convert bytes to string"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "A0A1",
+          "label": "prints the first 4 bytes 'A0A1'"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "decode",
+          "label": "uses .decode() to convert bytes to string"
+        }
       ],
-      "hints": ["The pattern is already built for you; just slice and decode the first 4 bytes.", "`pattern[:4].decode()` converts bytes to a string."]
+      "hints": [
+        "The pattern is already built for you; just slice and decode the first 4 bytes.",
+        "`pattern[:4].decode()` converts bytes to a string."
+      ],
+      "lesson": {
+        "title": "Cyclic patterns and offset identification",
+        "body": "A **cyclic pattern** is a bytes sequence in which no four-byte subsequence appears more than once anywhere in the pattern. When you send this pattern as a filler and the target crashes, the debugger shows you the exact four bytes that landed in EIP. Because every four-byte window is unique, those bytes identify their position in the pattern unambiguously — you look up what position they occupy and that is your offset. The alternative — sending thousands of identical `A`s and guessing which four are responsible — cannot produce a precise number, only a rough range.\n\nSimple hand-constructed patterns, such as joining two-character labels `A0`, `A1`, ..., `B0`, `B1`, ..., are enough to demonstrate the principle and work for small buffers. Professional tools such as `msf-pattern_create` generate de Bruijn sequences that pack the most information into the fewest bytes, but the underlying idea is the same: every four-byte window is distinct, so the value in EIP after the crash is a fingerprint that maps back to a unique byte position in the sequence.\n\nBytes and strings interoperate through the `encode()` and `decode()` methods: `\"A0\".encode()` produces `b\"A0\"`, and `b\"A0A1\".decode()` produces the string `\"A0A1\"`. This round-trip is essential in exploit work because patterns are often built from string templates and then encoded to bytes before transmission, while results read back from the debugger arrive as text that you convert to bytes for comparison.",
+        "example": "pairs = [f\"X{i}\".encode() for i in range(8)]\npattern = b\"\".join(pairs)\nprint(pattern[:6].decode())",
+        "output": "X0X1X2"
+      }
     }
   ],
   "stretch": [
@@ -68,9 +168,23 @@
       "starter": "import struct\noffset = 8\n# build the payload with filler + EIP and print its length\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "12", "label": "prints the total length 12 (8 + 4)"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "12",
+          "label": "prints the total length 12 (8 + 4)"
+        }
       ],
-      "hints": ["The payload is: filler (offset bytes) + packed EIP (4 bytes).", "Total length: offset + 4."]
+      "hints": [
+        "The payload is: filler (offset bytes) + packed EIP (4 bytes).",
+        "Total length: offset + 4."
+      ],
+      "lesson": {
+        "title": "Composing a staged exploit payload",
+        "body": "The complete buffer-overflow payload has a fixed, predictable structure: a **filler** section of exactly `offset` bytes, followed by a **return address** that overwrites EIP, optionally followed by additional data (a NOP sled and shellcode in a real exploit). Each section has a well-defined length and a specific byte content, and the total payload length must equal `offset + 4 + len(remaining_data)`.\n\nAssembling this in Python uses only two primitives: bytes repetition for uniform sections and `struct.pack(\"<I\", ...)` for any value that must occupy exactly four bytes in little-endian order. When `0x41414141` (\"AAAA\" in ASCII) appears as the stand-in EIP value, the debugger will display `41414141` in the EIP register after the crash, confirming that those four bytes landed at exactly the right position. Using a distinctive, recognizable stand-in value — rather than more `A`s — makes the confirmation unambiguous: you see `41414141` in EIP and know the filler ended there.\n\nThis same pattern — filler of length `offset`, then a packed four-byte address — is repeated at every stage of an actual engagement. The only thing that changes between stages is what goes in the EIP slot: four `B`s to prove control, then a found JMP ESP address to redirect execution, then eventually a shellcode-bearing payload. Writing the assembly once with well-named variables makes each substitution a one-line change rather than a rewrite.",
+        "example": "import struct\noffset = 16\nstub_eip = struct.pack(\"<I\", 0x42424242)\npayload = b\"\\x90\" * offset + stub_eip\nprint(len(payload))",
+        "output": "20"
+      }
     }
   ]
 }

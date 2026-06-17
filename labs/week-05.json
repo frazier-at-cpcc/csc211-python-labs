@@ -10,10 +10,29 @@
       "starter": "s = \"password\"\n# encode and print the length\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "8", "label": "prints the byte length 8"},
-        {"type": "source", "assert": "calls", "value": "encode", "label": "uses .encode()"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "8",
+          "label": "prints the byte length 8"
+        },
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "encode",
+          "label": "uses .encode()"
+        }
       ],
-      "hints": ["Call `.encode()` on the string: `s.encode()`", "Use `len()` to get the byte count."]
+      "hints": [
+        "Call `.encode()` on the string: `s.encode()`",
+        "Use `len()` to get the byte count."
+      ],
+      "lesson": {
+        "title": "bytes vs str: the encode() / decode() bridge",
+        "body": "Python maintains a strict distinction between `str` — a sequence of abstract Unicode characters — and `bytes` — a sequence of raw 8-bit values. The two types are not interchangeable: passing a `str` to a cryptographic function raises `TypeError: Strings must be encoded before hashing`, and attempting arithmetic on raw bytes rarely produces what you intended. Moving between them requires explicit conversion. `.encode()` accepts an encoding name (defaulting to `'utf-8'`) and produces a `bytes` object; `.decode()` reverses the trip.\n\nA `bytes` literal looks like a string with a `b` prefix: `b\"hello\"`. Internally, each element is an integer from 0 to 255 — the same range as a single byte of memory. Because of this, `len()` on a `bytes` object returns the *byte count*, which for pure ASCII text equals the character count but may exceed it for multi-byte characters like accented letters or emoji. This matters in security work because hash inputs and network payloads are counted in bytes, not characters.\n\nThe payoff for understanding this distinction is that errors become immediately legible. When a hashing call or a socket `send()` refuses your input, the cause is almost always that you are handing text where bytes are required. The fix is a single `.encode()` call. Internalizing the `str`→`bytes`→`str` round-trip now prevents a whole class of bugs across the rest of the course.",
+        "example": "username = \"netlab\"\nraw = username.encode()       # str -> bytes\nprint(len(raw))               # count in bytes\nprint(raw.decode())           # bytes -> str",
+        "output": "6\nnetlab"
+      }
     },
     {
       "id": "w5-e2",
@@ -21,10 +40,29 @@
       "starter": "# import hashlib and print the MD5 hex digest of b\"password\"\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "5f4dcc3b5aa765d61d8327deb882cf99", "label": "prints the correct MD5 hex digest"},
-        {"type": "source", "assert": "uses", "value": "hashlib", "label": "imports hashlib"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "5f4dcc3b5aa765d61d8327deb882cf99",
+          "label": "prints the correct MD5 hex digest"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "hashlib",
+          "label": "imports hashlib"
+        }
       ],
-      "hints": ["Use `hashlib.md5(b\"password\")` to create a hash object.", "Call `.hexdigest()` on the result to get a hex string."]
+      "hints": [
+        "Use `hashlib.md5(b\"password\")` to create a hash object.",
+        "Call `.hexdigest()` on the result to get a hex string."
+      ],
+      "lesson": {
+        "title": "Cryptographic hashing with hashlib",
+        "body": "`hashlib` is the standard-library module for cryptographic hash functions. The calling pattern is consistent across algorithms: pass bytes to the constructor (or to an `update()` call), then read the digest with `.hexdigest()` for a hex string or `.digest()` for raw bytes. For example, `hashlib.md5(b\"data\").hexdigest()` produces a 32-character lowercase hex string, while `hashlib.sha256(b\"data\").hexdigest()` produces 64 characters.\n\nThe output is **deterministic**: the same input bytes always produce the same digest, with no randomness and no key. This property makes hashing suitable for verification — checking that a downloaded file has not been tampered with, for instance — but also makes it vulnerable to precomputation attacks when used for passwords. An attacker who can compute `hashlib.md5(candidate.encode()).hexdigest()` for millions of candidates can compare each result against a stolen digest without ever reversing the hash function.\n\n**MD5 and SHA-1 are cryptographically broken** in the formal sense that researchers have demonstrated collisions — two different inputs that produce the same digest. They remain in constant use in legacy systems, which is why you need to recognize and compute them, but they must never be used to protect new data. SHA-256, from the SHA-2 family, remains sound for integrity checking; even so, it is too fast for password storage, where deliberately slow functions such as bcrypt or Argon2 are required.",
+        "example": "import hashlib\n\ndigest = hashlib.md5(b\"admin\").hexdigest()\nprint(digest)",
+        "output": "21232f297a57a5a743894a0e4a801fc3"
+      }
     },
     {
       "id": "w5-e3",
@@ -32,10 +70,29 @@
       "starter": "import hashlib\n# hash b\"test\" with SHA-256 and print the digest length\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "64", "label": "prints the digest length 64"},
-        {"type": "source", "assert": "uses", "value": "sha256", "label": "uses hashlib.sha256"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "64",
+          "label": "prints the digest length 64"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "sha256",
+          "label": "uses hashlib.sha256"
+        }
       ],
-      "hints": ["SHA-256 produces a 64-character hex digest.", "`len(hashlib.sha256(...).hexdigest())` returns the length."]
+      "hints": [
+        "SHA-256 produces a 64-character hex digest.",
+        "`len(hashlib.sha256(...).hexdigest())` returns the length."
+      ],
+      "lesson": {
+        "title": "Hash digest length as an algorithm fingerprint",
+        "body": "Every hash algorithm produces a digest of fixed, algorithm-specific size. MD5 outputs 128 bits — 16 bytes — which renders as 32 hexadecimal characters. SHA-1 outputs 160 bits (20 bytes, 40 hex characters). SHA-256 outputs 256 bits (32 bytes, 64 hex characters). Because each byte maps to exactly two hex digits, the hex digest is always twice the byte length. `len(hashlib.sha256(b\"anything\").hexdigest())` is therefore always 64, regardless of the input.\n\nThis predictable length is the first and fastest heuristic for identifying which algorithm produced a digest found in a database or a config file. A 32-character hex string in a `users` table is almost certainly MD5; a 64-character string suggests SHA-256. The identification is a heuristic rather than a proof — a few algorithms share a digest size — but it narrows the field immediately before attempting a crack. In a real engagement, this step determines which wordlist attack to launch and which cracking tool flags to set.\n\nFamiliarity with hex-digest lengths also serves the defensive role of recognizing when a system is using an inappropriate algorithm. If a password column contains 32-character strings, the site is using MD5 — a serious finding to report. If it uses 64-character strings but shows no sign of salting, it is using an unsalted fast hash — still vulnerable to precomputed attacks at scale. The length alone does not tell you everything, but it tells you where to look.",
+        "example": "import hashlib\n\ndigest = hashlib.sha256(b\"flag\").hexdigest()\nprint(len(digest))",
+        "output": "64"
+      }
     },
     {
       "id": "w5-e4",
@@ -43,10 +100,30 @@
       "starter": "import base64\n# encode b\"hello\" to base64, decode it, then decode to text\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "hello", "label": "prints the original text hello"},
-        {"type": "source", "assert": "uses", "value": "base64", "label": "imports base64"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "hello",
+          "label": "prints the original text hello"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "base64",
+          "label": "imports base64"
+        }
       ],
-      "hints": ["Use `base64.b64encode(b\"hello\")` to encode.", "Use `base64.b64decode(...)` to decode back to bytes.", "Call `.decode()` on the bytes to get text."]
+      "hints": [
+        "Use `base64.b64encode(b\"hello\")` to encode.",
+        "Use `base64.b64decode(...)` to decode back to bytes.",
+        "Call `.decode()` on the bytes to get text."
+      ],
+      "lesson": {
+        "title": "Base64 encoding: transport-safe representation, not secrecy",
+        "body": "Base64 transforms arbitrary bytes into a printable string using a 64-character alphabet (A–Z, a–z, 0–9, `+`, `/`) with `=` padding to make the output length a multiple of four. Its purpose is **compatibility**, not confidentiality: email systems, JSON payloads, JWTs, and HTTP headers all expect text, but the data they carry — images, keys, binary blobs — is bytes. Base64 is the standard bridge. Python's `base64.b64encode()` accepts bytes and returns bytes (the base64 representation); `base64.b64decode()` reverses it. Neither function takes a key or password.\n\nThe critical security point is that base64 provides **zero confidentiality**. Anyone who can read the encoded value can decode it with a one-liner. It is, however, immediately recognizable once you know its properties: the output uses only the alphabet above, the length is always a multiple of four, and one or two trailing `=` signs are common. During a penetration test, finding base64-encoded content in a config file, a cookie, or an API response is significant — it often means the developer believed it was protected when it is not.\n\nBase64 also appears inside cryptographic systems as a storage format for binary data (keys, ciphertexts, certificates) that must live in a text file. In that context it is doing its job — representing bytes as text — while a separate mechanism (actual encryption or a secret key) provides the confidentiality. Distinguishing \"this is base64 for transport\" from \"this is encrypted\" is a practical skill that requires understanding what base64 is and is not.",
+        "example": "import base64\n\nraw = b\"attack\"\nencoded = base64.b64encode(raw)\nprint(encoded)\nrecovered = base64.b64decode(encoded).decode()\nprint(recovered)",
+        "output": "b'YXR0YWNr'\nattack"
+      }
     },
     {
       "id": "w5-e5",
@@ -54,10 +131,29 @@
       "starter": "h = \"5f4dcc3b5aa765d61d8327deb882cf99\"  # an MD5 digest\n# identify and print the algorithm name\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "MD5", "label": "correctly identifies MD5"},
-        {"type": "source", "assert": "uses", "value": "if", "label": "uses an if statement"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "MD5",
+          "label": "correctly identifies MD5"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "if",
+          "label": "uses an if statement"
+        }
       ],
-      "hints": ["Get the length with `len(h)`.", "Use `if len(h) == 32:` for MD5, `elif len(h) == 40:` for SHA-1, `elif len(h) == 64:` for SHA-256."]
+      "hints": [
+        "Get the length with `len(h)`.",
+        "Use `if len(h) == 32:` for MD5, `elif len(h) == 40:` for SHA-1, `elif len(h) == 64:` for SHA-256."
+      ],
+      "lesson": {
+        "title": "Identifying hash algorithms by digest length",
+        "body": "When a hash digest appears without a label — in a database dump, a configuration file, or a log — the first practical step is to determine which algorithm produced it, because the answer determines which cracking approach is viable. Digest length is the primary heuristic: 32 hex characters indicates MD5 (128 bits), 40 indicates SHA-1 (160 bits), and 64 indicates SHA-256 (256 bits). A simple `if-elif` chain on `len(h)` is sufficient for the common cases a tester encounters.\n\nThe logic is deliberately a heuristic: multiple algorithms share a digest size (for example, MD4 and MD5 are both 128-bit), so the length identification is a hypothesis, not a certainty. In practice, testers pair the length with context — the age of the system, the platform, the number of rounds stored alongside the digest — to confirm the guess before committing to a cracking strategy. Identifying the wrong algorithm wastes computation time; identifying correctly focuses it.\n\nThis identification step is also a useful reporting signal. A field of 32-character hex strings in a user table tells an auditor the application was using MD5 for passwords — a finding that merits at minimum a high-severity recommendation to migrate to a slow password hash function. The `len()` check that drives your tool is the same check that drives the automated identifier in tools such as `hashid` and `hashcat`'s `--identify` mode; writing it by hand cements your understanding of why those tools output what they do.",
+        "example": "h = \"d033e22ae348aeb5660fc2140aec35850c4da997\"  # SHA-1 digest\nif len(h) == 32:\n    print(\"MD5\")\nelif len(h) == 40:\n    print(\"SHA-1\")\nelif len(h) == 64:\n    print(\"SHA-256\")",
+        "output": "SHA-1"
+      }
     }
   ],
   "stretch": [
@@ -67,10 +163,30 @@
       "starter": "import hashlib\ntarget = \"5f4dcc3b5aa765d61d8327deb882cf99\"\nwordlist = [\"letmein\", \"password\", \"admin\", \"sunshine\"]\n# loop and crack\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "[CRACKED] password", "label": "correctly cracks the hash"},
-        {"type": "source", "assert": "uses", "value": "for", "label": "uses a loop"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "[CRACKED] password",
+          "label": "correctly cracks the hash"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "for",
+          "label": "uses a loop"
+        }
       ],
-      "hints": ["Loop over each word in the wordlist.", "Hash it with `hashlib.md5(word.encode()).hexdigest()`.", "Compare the digest to the target; if they match, print and break."]
+      "hints": [
+        "Loop over each word in the wordlist.",
+        "Hash it with `hashlib.md5(word.encode()).hexdigest()`.",
+        "Compare the digest to the target; if they match, print and break."
+      ],
+      "lesson": {
+        "title": "Dictionary attacks: exploiting hash determinism",
+        "body": "A hash function is one-way by design — there is no mathematical inverse that recovers the input from a digest. However, its **determinism** creates a practical opening: if you know the algorithm, you can hash any candidate input and compare the result to a target digest. If they match, you have found the original input. This is a **dictionary attack**: loop over a wordlist, hash each entry, compare to the target, and stop when a match is found. The attack succeeds because users choose passwords from a small, predictable vocabulary, and a list of the ten million most common passwords covers a large fraction of real credentials.\n\nThe loop is straightforward to write but powerful at scale. Real-world cracking tools such as hashcat harness GPUs to test billions of candidates per second against fast algorithms like MD5 or SHA-1. A modern GPU can exhaust the ten-billion-entry space of eight-character lowercase passwords against MD5 in under an hour. Writing your own loop makes this concrete: each iteration is one candidate hashed and compared, and the only question is how many candidates fit in the wordlist and how fast each hash runs. Fast algorithms, which were designed for performance in other contexts, become the attacker's ally here.\n\nThe defense follows directly from the attack's structure. **Salting** adds a unique random value to each password before hashing, so two users with identical passwords produce different digests and no single precomputed table applies. **Slow hashing functions** (bcrypt, scrypt, Argon2) artificially increase the per-candidate cost, multiplying the total cracking time by orders of magnitude. Understanding the attack at the loop level is what makes these defenses legible: each countermeasure disrupts a specific step in the iteration you just implemented.",
+        "example": "import hashlib\n\ntarget = \"63a9f0ea7bb98050796b649e85481845\"  # MD5 of 'root'\nwordlist = [\"toor\", \"admin\", \"root\", \"guest\"]\nfor word in wordlist:\n    if hashlib.md5(word.encode()).hexdigest() == target:\n        print(f\"[CRACKED] {word}\")\n        break",
+        "output": "[CRACKED] root"
+      }
     }
   ]
 }

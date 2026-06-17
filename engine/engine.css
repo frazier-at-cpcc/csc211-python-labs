@@ -1,26 +1,58 @@
-:root { --gray:#54565A; --gold:#B4A269; --blue:#005D83; --pass:#2E7D32; --fail:#B4651E; }
+:root { --gray:#54565A; --gold:#B4A269; --blue:#005D83; --dark:#3E4043; --cream:#F4F3EE; --pass:#2E7D32; --fail:#B4651E; }
 * { box-sizing: border-box; }
-body { font-family: system-ui, Arial, sans-serif; color: var(--gray); margin: 0; padding: 1.5rem; line-height: 1.5; max-width: 60rem; }
+body { font-family: system-ui, Arial, sans-serif; color: var(--gray); margin: 0; padding: 1.25rem clamp(1rem, 4vw, 2.5rem); line-height: 1.55; max-width: 72rem; }
 a { color: var(--blue); }
-.crumb { font-size: .95rem; margin-bottom: .5rem; }
-h1 { color: var(--blue); margin: .2rem 0; }
-h2 { color: var(--blue); font-size: 1.1rem; }
-#lab-intro { max-width: 60rem; }
-.exercise { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
-.stretch { color: var(--gold); font-weight: normal; }
-.controls { margin: .5rem 0; display: flex; gap: .5rem; flex-wrap: wrap; }
-button { font: inherit; padding: .4rem .9rem; border: 1px solid var(--blue); background: var(--blue); color: #fff; border-radius: 6px; cursor: pointer; }
-button.hint { background: #fff; color: var(--blue); }
-button:disabled { opacity: .5; cursor: not-allowed; }
-button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-.output { background: #F4F3EE; padding: .6rem; border-radius: 6px; font-family: Consolas, monospace; white-space: pre-wrap; min-height: 1.5rem; }
-.results { list-style: none; padding: 0; }
+.crumb { font-size: .9rem; margin: 0 0 .5rem; }
+
+/* week bar + progress */
+#weekbar h1 { color: var(--blue); margin: .1rem 0 .2rem; font-size: 1.5rem; }
+.stepmeta { margin: 0 0 .4rem; color: var(--gray); font-size: .9rem; font-weight: 600; }
+.progress { height: 6px; background: #e6e4dd; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--gold); transition: width .2s; }
+
+/* buttons */
+.btn { font: inherit; display: inline-block; text-decoration: none; padding: .5rem 1rem; border-radius: 6px; cursor: pointer; border: 1px solid var(--blue); background: var(--blue); color: #fff; }
+.btn.ghost { background: #fff; color: var(--blue); }
+.btn.primary.ready { box-shadow: 0 0 0 3px rgba(180,162,105,.5); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.kicker { color: var(--gold); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .72rem; margin: 0 0 .35rem; }
+
+/* layout */
+.app { margin: 1rem 0 1.25rem; }
+.app.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 760px) { .app.split { grid-template-columns: 1fr; } }
+.pane { border: 1px solid #e0ded7; border-radius: 10px; padding: 1rem 1.15rem; background: #fff; }
+.instructions h2 { color: var(--blue); margin: .1rem 0 .6rem; font-size: 1.15rem; }
+
+/* lesson */
+.lesson-view { max-width: 46rem; }
+.lesson-card { border: 1px solid #e0ded7; border-left: 5px solid var(--gold); border-radius: 10px; padding: 1.25rem 1.4rem; background: #fff; }
+.lesson-card h2 { color: var(--blue); margin: .1rem 0 .6rem; font-size: 1.4rem; }
+.lesson-body p { margin: .5rem 0; }
+.cta { margin-top: 1rem; }
+
+/* code chips + example blocks */
+code { font-family: Consolas, monospace; font-size: .92em; background: #ECEAE1; color: #1A1A1A; padding: .05em .35em; border-radius: 4px; }
+.example { background: #1f2430; color: #e8e8e8; padding: .8rem 1rem; border-radius: 8px; font-family: Consolas, monospace; font-size: .92rem; overflow-x: auto; margin: .75rem 0 .25rem; }
+.exout-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--gray); font-weight: 700; margin-top: .5rem; }
+.exout { background: var(--cream); padding: .6rem 1rem; border-radius: 8px; font-family: Consolas, monospace; font-size: .9rem; white-space: pre-wrap; margin: .2rem 0 0; }
+
+/* workspace */
+.controls { margin: .6rem 0; display: flex; gap: .5rem; flex-wrap: wrap; }
+.output { background: var(--cream); padding: .6rem; border-radius: 6px; font-family: Consolas, monospace; white-space: pre-wrap; min-height: 1.5rem; }
+.results { list-style: none; padding: 0; margin: .5rem 0; }
 .results .pass { color: var(--pass); } .results .fail { color: var(--fail); }
-.hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; }
-.exercise h2 code, .hinttext code { font-family: Consolas, monospace; font-size: .92em; background: #ECEAE1; color: #1A1A1A; padding: .05em .35em; border-radius: 4px; }
+.exscore { font-weight: 700; margin-top: .3rem; }
+.exscore.passed { color: var(--pass); }
+.hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; margin: .5rem 0 0; }
+
+/* nav */
+#stepnav { display: flex; align-items: center; gap: .75rem; border-top: 1px solid #e6e4dd; padding-top: 1rem; }
+.nav-spacer { flex: 1; }
+#status { font-weight: 700; margin-top: 1rem; }
+.lab-foot { margin-top: 1.25rem; font-size: .85rem; color: #8a8a86; }
+
+/* CodeMirror — exempt from the border-box reset so the gutter measures right */
 .CodeMirror { border: 1px solid #ccc; height: auto; font-family: Consolas, monospace; }
-/* CodeMirror 5 measures its gutter assuming content-box; the global border-box
-   reset above collapses the line-number offset and overlaps the code. Exempt it. */
 .CodeMirror, .CodeMirror * { box-sizing: content-box; }
-#status, #score { font-weight: bold; margin-top: 1rem; }
-#score.passed { color: var(--pass); }

@@ -10,10 +10,29 @@
       "starter": "hosts = [\"www.x.com\", \"dev.x.com\", \"mail.x.com\"]\n# print each host on its own line\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "www.x.com\ndev.x.com\nmail.x.com", "label": "prints each host on its own line"},
-        {"type": "source", "assert": "uses", "value": "for", "label": "uses a for loop"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "www.x.com\ndev.x.com\nmail.x.com",
+          "label": "prints each host on its own line"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "for",
+          "label": "uses a for loop"
+        }
       ],
-      "hints": ["A for loop visits each item: `for h in hosts:`", "Indent the `print(h)` under the loop."]
+      "hints": [
+        "A for loop visits each item: `for h in hosts:`",
+        "Indent the `print(h)` under the loop."
+      ],
+      "lesson": {
+        "title": "Iterating a list with a for loop",
+        "body": "A **list** holds an ordered collection of values under a single variable name. You create one with square brackets, separating items with commas: `ports = [22, 80, 443]`. Each item occupies a numbered position called its **index**, and indexing starts at zero — so `ports[0]` is `22` and `ports[2]` is `443`. Asking for an index that does not exist raises an `IndexError`; Python is telling you precisely which line made the mistake.\n\nA **`for` loop** walks through every item in a list automatically. The syntax is `for variable in list:` followed by an indented block. On each pass Python assigns the next item to the loop variable, runs the indented block, then moves on. The loop ends when the list is exhausted, with no off-by-one errors and no need to track a position manually. Indentation is not stylistic — it is how Python determines what is \"inside\" the loop versus what runs once afterward.\n\nIn security tooling the `for` loop is ubiquitous: try each password in a wordlist, check each port in a range, report each subdomain in an enumeration. The list size can be three items or three thousand; the code is identical. Mastering this pattern is the foundation of every tool you will write this term.",
+        "example": "ports = [22, 80, 443]\nfor p in ports:\n    print(f\"Port {p}\")",
+        "output": "Port 22\nPort 80\nPort 443"
+      }
     },
     {
       "id": "w2-e2",
@@ -21,11 +40,39 @@
       "starter": "hosts = [\"www.x.com\", \"dev.x.com\"]\n# append ftp.x.com, then print the count\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "3", "label": "prints the count 3"},
-        {"type": "source", "assert": "calls", "value": "append", "label": "uses append()"},
-        {"type": "state", "name": "hosts", "equals": ["www.x.com", "dev.x.com", "ftp.x.com"], "label": "hosts ends with three items"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "3",
+          "label": "prints the count 3"
+        },
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "append",
+          "label": "uses append()"
+        },
+        {
+          "type": "state",
+          "name": "hosts",
+          "equals": [
+            "www.x.com",
+            "dev.x.com",
+            "ftp.x.com"
+          ],
+          "label": "hosts ends with three items"
+        }
       ],
-      "hints": ["`hosts.append(\"ftp.x.com\")` adds to the end.", "`len(hosts)` returns the count."]
+      "hints": [
+        "`hosts.append(\"ftp.x.com\")` adds to the end.",
+        "`len(hosts)` returns the count."
+      ],
+      "lesson": {
+        "title": "Growing a list with append() and measuring it with len()",
+        "body": "A list is mutable — you can add to it after it is created. The `append()` method attaches one new item to the **end** of the list: `results.append(\"192.168.1.5\")`. The list remembers order, so the first item appended is always the first in the original sequence, and the newest item is always last. `append()` modifies the list in place and returns `None`, so do not write `results = results.append(...)` — that would overwrite your list with `None`.\n\n`len()` counts the current number of items in any list and returns an integer. Because it reflects the real size after any number of appends, calling `len()` after `append()` always gives the up-to-date count. Both `append()` and `len()` work on lists of any type — strings, numbers, or mixed.\n\nIn recon scripts you typically start with an empty list (`findings = []`) and build it up as new facts arrive: one `append()` per IP address found, per subdomain confirmed, per credential discovered. Checking `len()` at the end gives a quick tally without counting by hand.",
+        "example": "ips = [\"10.0.0.1\", \"10.0.0.2\"]\nips.append(\"10.0.0.3\")\nprint(len(ips))",
+        "output": "3"
+      }
     },
     {
       "id": "w2-e3",
@@ -33,11 +80,34 @@
       "starter": "hosts = [\"www.x.com\", \"dev.x.com\"]\n# flag dev hosts for review\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "www.x.com\ndev.x.com  <-- review", "label": "flags only the dev host"},
-        {"type": "source", "assert": "uses", "value": "if", "label": "uses an if statement"},
-        {"type": "source", "assert": "uses", "value": "in", "label": "uses the in operator"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "www.x.com\ndev.x.com  <-- review",
+          "label": "flags only the dev host"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "if",
+          "label": "uses an if statement"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "in",
+          "label": "uses the in operator"
+        }
       ],
-      "hints": ["`if \"dev\" in host:` is true when the text appears in the host."]
+      "hints": [
+        "`if \"dev\" in host:` is true when the text appears in the host."
+      ],
+      "lesson": {
+        "title": "Filtering items with if and the in operator",
+        "body": "A `for` loop processes every item in a list, but often you need to act differently depending on the item's content. An **`if` statement** tests a condition and runs its indented block only when that condition is true. Pair it with an `else` block to handle everything that does not match, or chain `elif` (\"else if\") branches for multiple distinct cases. The first branch whose condition is true runs; the rest are skipped entirely.\n\nThe **`in` operator** tests membership or substring presence. For a string, `\"staging\" in host` is `True` when the text `\"staging\"` appears anywhere inside `host`. For a list, `item in my_list` is `True` when the value is one of the list's elements. `not in` reverses both: `\"dev\" not in host` is `True` when the substring is absent. These operators read naturally and eliminate the need for manual character-by-character comparison.\n\nCombining `for` with `if`/`in` is the bread-and-butter of security filtering: walk every host found, flag only those that match a high-interest pattern. Development and staging subdomains are a classic example — they often run older code, relaxed access controls, or both, making them priority targets during a review. Writing `if \"dev\" in host` or `if \"staging\" in host` is a direct translation of a real analyst's triage decision.",
+        "example": "services = [\"ssh\", \"http\", \"telnet\", \"ftp\"]\nfor svc in services:\n    if \"tel\" in svc:\n        print(f\"{svc}  <-- insecure\")\n    else:\n        print(svc)",
+        "output": "ssh\nhttp\ntelnet  <-- insecure\nftp"
+      }
     },
     {
       "id": "w2-e4",
@@ -45,10 +115,32 @@
       "starter": "# build the profile dict, then print the registrar\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "ACME", "label": "prints the registrar value"},
-        {"type": "state", "name": "profile", "equals": {"domain": "x.com", "registrar": "ACME"}, "label": "profile has both fields"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "ACME",
+          "label": "prints the registrar value"
+        },
+        {
+          "type": "state",
+          "name": "profile",
+          "equals": {
+            "domain": "x.com",
+            "registrar": "ACME"
+          },
+          "label": "profile has both fields"
+        }
       ],
-      "hints": ["A dict literal: `profile = {\"domain\": \"x.com\", \"registrar\": \"ACME\"}`", "Index by key: `profile[\"registrar\"]`."]
+      "hints": [
+        "A dict literal: `profile = {\"domain\": \"x.com\", \"registrar\": \"ACME\"}`",
+        "Index by key: `profile[\"registrar\"]`."
+      ],
+      "lesson": {
+        "title": "Dictionaries: labeled storage for structured findings",
+        "body": "A **dictionary** stores `key: value` pairs in a single variable. Unlike a list — where position alone identifies an item — each value in a dictionary has a meaningful string key, so you never have to remember that index 0 means \"registrar\" and index 1 means \"creation date.\" You create a dictionary with curly braces: `record = {\"ip\": \"93.184.216.34\", \"asn\": \"AS15133\"}`. Keys are typically strings; values can be strings, numbers, lists, or even other dictionaries.\n\nRetrieve a value by key with square-bracket notation: `record[\"ip\"]` returns `\"93.184.216.34\"`. Add a new key-value pair the same way: `record[\"country\"] = \"US\"` inserts it into the dictionary. If you request a key that does not exist, Python raises a `KeyError` — the dictionary equivalent of an `IndexError` on a list — which tells you exactly which key was missing.\n\nDictionaries are the natural container for a target profile: one key per piece of information (domain, registrar, name servers, creation date), all grouped under a single variable. Reading a value by name is clearer, faster to write, and safer to modify than tracking positions in a parallel list. Every professional reconnaissance script, from a simple WHOIS parser to a full OSINT aggregator, organizes its findings this way.",
+        "example": "host = {\"name\": \"vpn.corp.com\", \"status\": \"up\"}\nprint(host[\"name\"])",
+        "output": "vpn.corp.com"
+      }
     },
     {
       "id": "w2-e5",
@@ -56,10 +148,29 @@
       "starter": "profile = {\"domain\": \"x.com\", \"subdomains\": [\"www\", \"dev\", \"mail\"]}\n# print each subdomain on its own line\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "www\ndev\nmail", "label": "prints each subdomain"},
-        {"type": "source", "assert": "uses", "value": "for", "label": "loops the subdomain list"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "www\ndev\nmail",
+          "label": "prints each subdomain"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "for",
+          "label": "loops the subdomain list"
+        }
       ],
-      "hints": ["Loop the list with: for sub in profile[\"subdomains\"]:", "Reach the list with `profile[\"subdomains\"]`, then loop it."]
+      "hints": [
+        "Loop the list with: for sub in profile[\"subdomains\"]:",
+        "Reach the list with `profile[\"subdomains\"]`, then loop it."
+      ],
+      "lesson": {
+        "title": "Nesting lists inside dictionaries",
+        "body": "A dictionary value can itself be a list. This is the natural shape of real OSINT data: a single target record (a dictionary) holds a field like `\"mx_records\"` whose value is a list of mail-server names. You access the inner list by chaining a key lookup with a `for` loop: `for srv in record[\"mx_records\"]:` walks each mail server in turn. The outer dictionary gives you the label; the inner list gives you the collection of things behind that label.\n\nNesting is not limited to one level. A profile dictionary might hold a `\"ports\"` list, and each element of that list might itself be a dictionary with `\"number\"` and `\"service\"` keys. Real security tools like Nmap's Python bindings and Shodan's API return data in exactly these nested shapes. Learning to navigate nested structures now means you will recognize and use those APIs naturally when you meet them.\n\nThe critical syntax detail: `profile[\"subdomains\"]` evaluates first to the list object, and then you loop that object. Write `for sub in profile[\"subdomains\"]:`, not `for sub in profile:` (which would loop the dictionary's keys, not the subdomain list). Keeping the two access patterns distinct — `profile[\"key\"]` for a single value, `for item in profile[\"key\"]:` for a list value — is the skill this exercise builds.",
+        "example": "record = {\"domain\": \"corp.com\", \"ns\": [\"ns1.corp.com\", \"ns2.corp.com\"]}\nfor server in record[\"ns\"]:\n    print(server)",
+        "output": "ns1.corp.com\nns2.corp.com"
+      }
     }
   ],
   "stretch": [
@@ -69,9 +180,22 @@
       "starter": "hosts = [\"www.x.com\", \"dev.x.com\", \"test.x.com\"]\n# count and report flagged hosts\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "regex", "expected": "Flagged 2 host\\(s\\)", "label": "reports two flagged hosts"}
+        {
+          "type": "stdout",
+          "mode": "regex",
+          "expected": "Flagged 2 host\\(s\\)",
+          "label": "reports two flagged hosts"
+        }
       ],
-      "hints": ["Keep a counter starting at 0 and add 1 inside the if."]
+      "hints": [
+        "Keep a counter starting at 0 and add 1 inside the if."
+      ],
+      "lesson": {
+        "title": "Counting matches with a loop counter",
+        "body": "Counting how many items in a list satisfy a condition is a fundamental pattern. The recipe is always the same: initialize an integer counter to zero before the loop, then increment it by one (`count += 1`, which is shorthand for `count = count + 1`) inside the `if` block each time a match is found. After the loop finishes, the counter holds the total. Nothing prints or changes mid-count unless you deliberately put output inside the loop.\n\nA single `if` can test multiple keywords with `or`: `if \"dev\" in host or \"test\" in host or \"staging\" in host:` — the condition is true when any one of the three matches. Keep each keyword test explicit; a separate `or` clause for each word is clear and easy to extend. Alternatively you can loop a small list of keywords and break early, but the `or` approach is most readable for a handful of terms.\n\nReporting the result cleanly requires an f-string that embeds the counter: `f\"Flagged {count} host(s)\"`. Note the literal `(s)` to handle singular and plural gracefully without an extra conditional. This count-then-report pattern appears constantly in security tooling: how many hosts responded? how many credentials matched? how many CVEs were found? Getting comfortable writing it quickly is a productivity multiplier.",
+        "example": "ips = [\"192.168.1.1\", \"10.0.0.1\", \"172.16.0.1\"]\ncount = 0\nfor ip in ips:\n    if ip.startswith(\"10.\") or ip.startswith(\"172.\"):\n        count += 1\nprint(f\"Private (non-192) addresses: {count}\")",
+        "output": "Private (non-192) addresses: 2"
+      }
     }
   ]
 }

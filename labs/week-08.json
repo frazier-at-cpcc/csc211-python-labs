@@ -10,11 +10,36 @@
       "starter": "import argparse\n\n# build the parser and add --target\n# parse the list [\"--target\", \"10.0.0.1\"]\n# print args.target\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "10.0.0.1", "label": "prints the target argument"},
-        {"type": "source", "assert": "uses", "value": "ArgumentParser", "label": "creates an ArgumentParser"},
-        {"type": "source", "assert": "calls", "value": "add_argument", "label": "adds --target argument"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "10.0.0.1",
+          "label": "prints the target argument"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "ArgumentParser",
+          "label": "creates an ArgumentParser"
+        },
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "add_argument",
+          "label": "adds --target argument"
+        }
       ],
-      "hints": ["Create the parser: `parser = argparse.ArgumentParser()`", "Add the argument: `parser.add_argument(\"--target\")`", "Parse the list: `args = parser.parse_args([\"--target\", \"10.0.0.1\"])` (note: explicit list, not sys.argv)"]
+      "hints": [
+        "Create the parser: `parser = argparse.ArgumentParser()`",
+        "Add the argument: `parser.add_argument(\"--target\")`",
+        "Parse the list: `args = parser.parse_args([\"--target\", \"10.0.0.1\"])` (note: explicit list, not sys.argv)"
+      ],
+      "lesson": {
+        "title": "Building an ArgumentParser and parsing a flag",
+        "body": "The `argparse` module is Python's standard library solution for giving a script a command-line interface. Instead of hardcoding values at the top of a file, you define *arguments* on a parser object and let the user — or an automated runner — supply them at invocation time. The core pattern is always the same: create an `ArgumentParser`, call `add_argument` one or more times to declare what the script accepts, and then call `parse_args` to process the input and return a namespace object whose attributes are the values that were supplied.\n\nA **positional** argument is one the user supplies by position, with no leading dashes. An **optional** argument — also called a flag — has one or two leading dashes (e.g., `--target`). Optional arguments can be omitted if a `default` is provided; required optional arguments can be enforced with `required=True`. The resulting `args` namespace gives you the values as plain attributes: `args.target` holds whatever was passed to `--target`.\n\nIn the Pyodide browser environment there is no real terminal, so `parse_args()` with no arguments would read `sys.argv`, which is meaningless in that context. Always call `parser.parse_args([...])` with an **explicit list**. In production scripts you would omit the list and let `argparse` read `sys.argv` automatically — the explicit-list form is a testing convention that makes behavior deterministic and is identical in every way except for the input source.",
+        "example": "import argparse\n\nparser = argparse.ArgumentParser(description=\"Log-file analyzer\")\nparser.add_argument(\"--logfile\", help=\"path to the log\")\nargs = parser.parse_args([\"--logfile\", \"/var/log/auth.log\"])\nprint(args.logfile)",
+        "output": "/var/log/auth.log"
+      }
     },
     {
       "id": "w8-e2",
@@ -22,10 +47,29 @@
       "starter": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --verbose with action=\"store_true\"\n# parse with --verbose set\n# print args.verbose\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "True", "label": "prints True for verbose flag"},
-        {"type": "source", "assert": "uses", "value": "store_true", "label": "uses store_true action"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "True",
+          "label": "prints True for verbose flag"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "store_true",
+          "label": "uses store_true action"
+        }
       ],
-      "hints": ["Use `action=\"store_true\"`: `parser.add_argument(\"--verbose\", action=\"store_true\")`", "The flag does not need a value — just include it in the parse list."]
+      "hints": [
+        "Use `action=\"store_true\"`: `parser.add_argument(\"--verbose\", action=\"store_true\")`",
+        "The flag does not need a value — just include it in the parse list."
+      ],
+      "lesson": {
+        "title": "Boolean flags with action=\"store_true\"",
+        "body": "Many command-line tools accept flags that act as on/off switches: `--verbose`, `--debug`, `--dry-run`. These flags carry no value of their own — their mere presence is the signal. `argparse` supports this pattern through the `action=\"store_true\"` option on `add_argument`. When the flag appears in the argument list, `argparse` stores `True` in the corresponding attribute; when it is absent, the attribute defaults to `False`.\n\nThis behavior is cleaner than passing `--verbose true` or `--verbose 1` because it matches the convention users expect from system tools and avoids the ambiguity of truthy string values. The check in code is simply `if args.verbose:` — no string comparison required.\n\nA complementary action, `store_false`, works in reverse and is useful for flags that disable a default-on behavior. For security tooling, boolean flags are a natural way to enable noisier output during development (`--verbose`) or to suppress output for scripted use, so understanding the `store_true` idiom is directly applicable to every tool you package this week.",
+        "example": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--dry-run\", action=\"store_true\", help=\"preview without executing\")\nargs = parser.parse_args([\"--dry-run\"])\nprint(args.dry_run)",
+        "output": "True"
+      }
     },
     {
       "id": "w8-e3",
@@ -33,11 +77,35 @@
       "starter": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --ports with nargs=\"+\" and type=int\n# parse [\"--ports\", \"22\", \"80\"]\n# print args.ports\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "[22, 80]", "label": "prints the ports list as integers"},
-        {"type": "source", "assert": "uses", "value": "nargs", "label": "uses nargs"},
-        {"type": "source", "assert": "uses", "value": "type=int", "label": "uses type=int"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "[22, 80]",
+          "label": "prints the ports list as integers"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "nargs",
+          "label": "uses nargs"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "type=int",
+          "label": "uses type=int"
+        }
       ],
-      "hints": ["Use `nargs=\"+\"` to accept one or more values.", "Use `type=int` to convert strings to integers: `parser.add_argument(\"--ports\", nargs=\"+\", type=int)`"]
+      "hints": [
+        "Use `nargs=\"+\"` to accept one or more values.",
+        "Use `type=int` to convert strings to integers: `parser.add_argument(\"--ports\", nargs=\"+\", type=int)`"
+      ],
+      "lesson": {
+        "title": "Accepting multiple values with nargs and type conversion",
+        "body": "`argparse` can collect more than one value for a single flag using the `nargs` parameter. `nargs=\"+\"` means one or more values; `nargs=\"*\"` means zero or more; an integer like `nargs=3` means exactly that many. Each raw command-line token arrives as a string, so pairing `nargs` with `type=int` (or `type=float`, or any callable) instructs `argparse` to convert each token automatically before storing it. The resulting attribute is a Python list containing values of the specified type.\n\nThis is the idiomatic way to accept a port list (`--ports 22 80 443`) rather than forcing the user to pass a comma-separated string and split it manually. The conversion happens before your code ever touches `args.ports`, which eliminates an entire class of type-error bugs. If any token fails conversion, `argparse` raises an error immediately with a clear message, before your function logic even runs.\n\nIn penetration-testing tools, `nargs` is also useful for accepting multiple target hosts, multiple wordlist paths, or multiple protocol versions. Knowing that `argparse` handles the splitting and conversion keeps your function signatures clean: receive a plain Python list of the right type, do the work.",
+        "example": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--hosts\", nargs=\"+\", help=\"target hosts\")\nargs = parser.parse_args([\"--hosts\", \"192.168.1.1\", \"192.168.1.2\"])\nprint(args.hosts)",
+        "output": "['192.168.1.1', '192.168.1.2']"
+      }
     },
     {
       "id": "w8-e4",
@@ -45,10 +113,30 @@
       "starter": "import argparse\n\n# define scan(target) that prints f\"scanning {target}\"\n# build the parser with --target\n# parse [\"--target\", \"10.0.0.1\"]\n# call scan(args.target)\n",
       "required": true,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "scanning 10.0.0.1", "label": "prints scanning message with target"},
-        {"type": "source", "assert": "defines", "value": "scan", "label": "defines the scan function"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "scanning 10.0.0.1",
+          "label": "prints scanning message with target"
+        },
+        {
+          "type": "source",
+          "assert": "defines",
+          "value": "scan",
+          "label": "defines the scan function"
+        }
       ],
-      "hints": ["Define the function first: `def scan(target):`", "Use an f-string inside: `print(f\"scanning {target}\")`", "After parsing, call: `scan(args.target)`"]
+      "hints": [
+        "Define the function first: `def scan(target):`",
+        "Use an f-string inside: `print(f\"scanning {target}\")`",
+        "After parsing, call: `scan(args.target)`"
+      ],
+      "lesson": {
+        "title": "Routing parsed arguments into functions",
+        "body": "Defining all your logic in functions and then calling those functions with parsed arguments is the standard structure of a well-designed command-line tool. The pattern has a clear separation of concerns: `argparse` handles input validation and type conversion; your functions handle computation and output. Neither layer needs to know anything about the other's internals, which makes each testable in isolation.\n\nOnce `parse_args` returns an `args` namespace, you extract the relevant attributes and pass them as ordinary Python arguments to your functions. The functions themselves are written as if they were always called from other Python code, not from the command line — they take plain parameters, do work, and either return values or print output. The CLI layer is just a thin wrapper that glues the parsed input to those calls.\n\nThis design also makes chaining tools straightforward. A runner script using `subprocess` can call each tool with the appropriate flags, and each tool's function layer works identically whether it is invoked from the terminal, from another script, or from a test harness. Refactoring a hardcoded script into this structure is the concrete technical step that turns a one-off into a reusable toolkit.",
+        "example": "import argparse\n\ndef report(filename):\n    print(f\"writing report to {filename}\")\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--output\", help=\"output file\")\nargs = parser.parse_args([\"--output\", \"findings.txt\"])\nreport(args.output)",
+        "output": "writing report to findings.txt"
+      }
     },
     {
       "id": "w8-e5",
@@ -56,10 +144,30 @@
       "starter": "import argparse\n\nparser = argparse.ArgumentParser(description=\"A simple scanner\")\nparser.add_argument(\"--target\", help=\"target host\")\n# call parser.format_help() and print it\n# the output must contain '--target'\n",
       "required": true,
       "checks": [
-        {"type": "source", "assert": "calls", "value": "format_help", "label": "calls format_help()"},
-        {"type": "stdout", "mode": "regex", "expected": "--target", "label": "help text contains --target"}
+        {
+          "type": "source",
+          "assert": "calls",
+          "value": "format_help",
+          "label": "calls format_help()"
+        },
+        {
+          "type": "stdout",
+          "mode": "regex",
+          "expected": "--target",
+          "label": "help text contains --target"
+        }
       ],
-      "hints": ["Call `help_text = parser.format_help()`", "Print it: `print(help_text)`", "`format_help()` returns the auto-generated help string."]
+      "hints": [
+        "Call `help_text = parser.format_help()`",
+        "Print it: `print(help_text)`",
+        "`format_help()` returns the auto-generated help string."
+      ],
+      "lesson": {
+        "title": "Auto-generated help text with format_help()",
+        "body": "`argparse` produces a `--help` message automatically from the metadata you supply: the `description` argument to `ArgumentParser`, and the `help` string in each `add_argument` call. This auto-generation means a well-annotated tool self-documents without any extra code — a property that matters in professional tooling because documentation that lives next to the code stays in sync with it, while documentation written separately drifts.\n\nThe `format_help()` method returns the help string as a Python value without printing it, which lets you inspect or test it programmatically. `print_help()` is the convenience form that writes directly to stdout. Both reflect the parser's current state, so if you add an argument, the help text updates immediately.\n\nThe help string should describe what an argument does, not repeat its name. Providing `help=\"target IP address or hostname\"` instead of `help=\"the target\"` gives a user enough information to use the tool without reading the source. Treating the help strings as first-class documentation — not as an optional nicety — is a marker of a tool built to be shared rather than used once.",
+        "example": "import argparse\n\nparser = argparse.ArgumentParser(description=\"Credential checker\")\nparser.add_argument(\"--wordlist\", help=\"path to password wordlist\")\nhelp_text = parser.format_help()\nprint(\"--wordlist\" in help_text)",
+        "output": "True"
+      }
     }
   ],
   "stretch": [
@@ -69,10 +177,30 @@
       "starter": "import argparse\n\ndef recon(target):\n    print(f\"recon {target}\")\n\ndef scan(target):\n    print(f\"scan {target}\")\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --mode with choices=[\"recon\", \"scan\"]\n# parse [\"--target\", \"10.0.0.1\", \"--mode\", \"scan\"]\n# call the appropriate function\n",
       "required": false,
       "checks": [
-        {"type": "stdout", "mode": "normalized", "expected": "scan 10.0.0.1", "label": "calls the correct function based on mode"},
-        {"type": "source", "assert": "uses", "value": "choices", "label": "uses choices for --mode"}
+        {
+          "type": "stdout",
+          "mode": "normalized",
+          "expected": "scan 10.0.0.1",
+          "label": "calls the correct function based on mode"
+        },
+        {
+          "type": "source",
+          "assert": "uses",
+          "value": "choices",
+          "label": "uses choices for --mode"
+        }
       ],
-      "hints": ["Use `choices=[\"recon\", \"scan\"]`: `parser.add_argument(\"--mode\", choices=[\"recon\", \"scan\"])`", "After parsing, check `args.mode` and call the appropriate function.", "Use an if/elif block: `if args.mode == \"scan\": scan(args.target)`"]
+      "hints": [
+        "Use `choices=[\"recon\", \"scan\"]`: `parser.add_argument(\"--mode\", choices=[\"recon\", \"scan\"])`",
+        "After parsing, check `args.mode` and call the appropriate function.",
+        "Use an if/elif block: `if args.mode == \"scan\": scan(args.target)`"
+      ],
+      "lesson": {
+        "title": "Restricting argument values with choices",
+        "body": "The `choices` parameter on `add_argument` limits what the user can supply to a specific set of values. If the parsed token is not in the list, `argparse` rejects it immediately and prints an error message that includes the allowed options. You do not need to write your own validation branch — the parser enforces the constraint before your code runs, which is a meaningful reduction in defensive boilerplate.\n\n`choices` works with any type, not just strings. Combined with `type=int`, you could restrict a verbosity level to `[0, 1, 2]`. Combined with `type=str`, it is the natural fit for mode flags like `\"recon\"`, `\"scan\"`, or `\"exploit\"` — precisely the kind of subcommand routing you encounter when packaging a multi-phase engagement toolkit. For more complex dispatch, `argparse` also provides subparsers (`add_subparsers`), but for a small, fixed set of modes, `choices` is simpler and produces clearer error messages.\n\nFrom a security tooling perspective, `choices` doubles as a lightweight guardrail against misuse: a tool that only accepts `\"recon\"` or `\"scan\"` cannot be accidentally invoked in an unintended mode by a typo. That is a modest but real protection when the downstream actions of different modes differ significantly in scope or impact.",
+        "example": "import argparse\n\ndef enumerate_host(target):\n    print(f\"enumerating {target}\")\n\ndef brute_force(target):\n    print(f\"brute-forcing {target}\")\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--phase\", choices=[\"enum\", \"brute\"])\nparser.add_argument(\"--target\")\nargs = parser.parse_args([\"--phase\", \"enum\", \"--target\", \"10.10.0.5\"])\nif args.phase == \"enum\":\n    enumerate_host(args.target)\nelse:\n    brute_force(args.target)",
+        "output": "enumerating 10.10.0.5"
+      }
     }
   ]
 }

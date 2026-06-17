@@ -16,10 +16,11 @@ and reports to no LMS — completion is remembered only in the visitor's browser
 
 ```
 index.html            Landing hub — intro, ethics note, grid of the 8 labs
-lab.html              The lab runner (loads ?week=N)
+lab.html              Paginated lab runner (loads ?week=N&step=K)
 styles.css            Landing-page styles
 engine/
-  engine.mjs          DOM glue: CodeMirror + Pyodide + grading + localStorage
+  engine.mjs          DOM glue: pagination + lesson/challenge rendering +
+                      CodeMirror + Pyodide + grading + localStorage progress
   engine.css
   lib/
     checks.mjs        Evaluate an exercise's checks (stdout / source / state)
@@ -27,18 +28,36 @@ engine/
     runner.mjs        Run student code in a stdout-capturing Pyodide wrapper
 labs/
   manifest.json       Week list + titles (drives the hub)
-  week-01.json … week-08.json   Per-week exercises (prompts, starters, checks, hints)
+  week-01.json … week-08.json   Per-week exercises + lessons
 .nojekyll             Serve files as-is on GitHub Pages (no Jekyll processing)
 ```
 
 The engine logic modules (`engine/lib/*`) are the same ones used and unit-tested
 in the course repository; only the SCORM reporting layer was removed here.
 
+## Flow (DataCamp-style)
+
+Each week is a paginated sequence of one-per-page steps. For every exercise the
+learner sees a **Lesson** page (a concept card: a few teaching paragraphs plus a
+worked example with its output — the example is illustrative, never the
+challenge's solution), then the **Challenge** page (two-pane: instructions and a
+hint on the left, code editor with Run/Check on the right). Prev / progress /
+Next navigation runs along the bottom; Pyodide loads only on challenge pages.
+
 ## Add or edit a lab
 
-Edit the matching `labs/week-NN.json` (see the shape of any existing file), then
-update `labs/manifest.json` if the title or counts change. No build step — the
-files are served directly.
+Edit the matching `labs/week-NN.json`, then update `labs/manifest.json` if the
+title or counts change. No build step — files are served directly.
+
+### exercises.json shape
+- Top level: `week`, `title`, `intro`, optional `masteryPercent`, optional
+  `preload`, `exercises` (list), optional `stretch` (list).
+- Each exercise: `id`, `prompt`, `starter`, optional `required` (default true),
+  `checks`, optional `hints`, and a `lesson`.
+- Each `lesson`: `title`, `body` (paragraphs separated by a blank line;
+  supports inline `` `code` `` and `**bold**`), `example` (a runnable snippet
+  that teaches the concept — NOT the answer), `output` (the example's exact
+  stdout). Lesson example outputs are verified against real CPython.
 
 ## Run locally
 
