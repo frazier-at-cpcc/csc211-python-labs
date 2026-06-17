@@ -1,0 +1,76 @@
+{
+  "week": 5,
+  "title": "Core Python — Bytes, Encoding & Hashing",
+  "masteryPercent": 100,
+  "intro": "Cryptography begins with transforming data — encoding it for transport, hashing it for verification, and encrypting it for secrecy. Practice the Python that moves between bytes and text, generates digests, and identifies hash algorithms by their fingerprints.",
+  "exercises": [
+    {
+      "id": "w5-e1",
+      "prompt": "A string `s = \"password\"` is given. Use `.encode()` to convert it to bytes, then print the length of the bytes object.",
+      "starter": "s = \"password\"\n# encode and print the length\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "8", "label": "prints the byte length 8"},
+        {"type": "source", "assert": "calls", "value": "encode", "label": "uses .encode()"}
+      ],
+      "hints": ["Call `.encode()` on the string: `s.encode()`", "Use `len()` to get the byte count."]
+    },
+    {
+      "id": "w5-e2",
+      "prompt": "Import `hashlib`. Hash the bytes `b\"password\"` with MD5 and print the hexadecimal digest.",
+      "starter": "# import hashlib and print the MD5 hex digest of b\"password\"\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "5f4dcc3b5aa765d61d8327deb882cf99", "label": "prints the correct MD5 hex digest"},
+        {"type": "source", "assert": "uses", "value": "hashlib", "label": "imports hashlib"}
+      ],
+      "hints": ["Use `hashlib.md5(b\"password\")` to create a hash object.", "Call `.hexdigest()` on the result to get a hex string."]
+    },
+    {
+      "id": "w5-e3",
+      "prompt": "Using `hashlib.sha256`, hash the bytes `b\"test\"` and print the **length** of the hexadecimal digest (not the digest itself).",
+      "starter": "import hashlib\n# hash b\"test\" with SHA-256 and print the digest length\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "64", "label": "prints the digest length 64"},
+        {"type": "source", "assert": "uses", "value": "sha256", "label": "uses hashlib.sha256"}
+      ],
+      "hints": ["SHA-256 produces a 64-character hex digest.", "`len(hashlib.sha256(...).hexdigest())` returns the length."]
+    },
+    {
+      "id": "w5-e4",
+      "prompt": "Import `base64`. Encode the bytes `b\"hello\"` to base64, then decode the result back to bytes. Print the decoded bytes as text using `.decode()`.",
+      "starter": "import base64\n# encode b\"hello\" to base64, decode it, then decode to text\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "hello", "label": "prints the original text hello"},
+        {"type": "source", "assert": "uses", "value": "base64", "label": "imports base64"}
+      ],
+      "hints": ["Use `base64.b64encode(b\"hello\")` to encode.", "Use `base64.b64decode(...)` to decode back to bytes.", "Call `.decode()` on the bytes to get text."]
+    },
+    {
+      "id": "w5-e5",
+      "prompt": "A hash digest `h` is given as a hex string. Print the algorithm name by identifying it from the digest's length: if 32 characters, print \"MD5\"; if 40, print \"SHA-1\"; if 64, print \"SHA-256\".",
+      "starter": "h = \"5f4dcc3b5aa765d61d8327deb882cf99\"  # an MD5 digest\n# identify and print the algorithm name\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "MD5", "label": "correctly identifies MD5"},
+        {"type": "source", "assert": "uses", "value": "if", "label": "uses an if statement"}
+      ],
+      "hints": ["Get the length with `len(h)`.", "Use `if len(h) == 32:` for MD5, `elif len(h) == 40:` for SHA-1, `elif len(h) == 64:` for SHA-256."]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w5-s1",
+      "prompt": "Stretch: You are given a target MD5 hash `target = \"5f4dcc3b5aa765d61d8327deb882cf99\"` and a wordlist. Loop over the wordlist, hash each word with MD5, and print the matching word when found (format: \"[CRACKED] password\").",
+      "starter": "import hashlib\ntarget = \"5f4dcc3b5aa765d61d8327deb882cf99\"\nwordlist = [\"letmein\", \"password\", \"admin\", \"sunshine\"]\n# loop and crack\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "[CRACKED] password", "label": "correctly cracks the hash"},
+        {"type": "source", "assert": "uses", "value": "for", "label": "uses a loop"}
+      ],
+      "hints": ["Loop over each word in the wordlist.", "Hash it with `hashlib.md5(word.encode()).hexdigest()`.", "Compare the digest to the target; if they match, print and break."]
+    }
+  ]
+}

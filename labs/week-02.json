@@ -1,0 +1,77 @@
+{
+  "week": 2,
+  "title": "Core Python — Lists, Loops & Dictionaries",
+  "masteryPercent": 100,
+  "intro": "Recon produces lists of hosts and labeled facts. Practice the Python that stores and walks that data — the same constructs behind every tool you will write this term.",
+  "exercises": [
+    {
+      "id": "w2-e1",
+      "prompt": "A list `hosts` is given. Print each host on its own line using a for loop.",
+      "starter": "hosts = [\"www.x.com\", \"dev.x.com\", \"mail.x.com\"]\n# print each host on its own line\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "www.x.com\ndev.x.com\nmail.x.com", "label": "prints each host on its own line"},
+        {"type": "source", "assert": "uses", "value": "for", "label": "uses a for loop"}
+      ],
+      "hints": ["A for loop visits each item: `for h in hosts:`", "Indent the `print(h)` under the loop."]
+    },
+    {
+      "id": "w2-e2",
+      "prompt": "Append \"ftp.x.com\" to `hosts`, then print how many hosts there are.",
+      "starter": "hosts = [\"www.x.com\", \"dev.x.com\"]\n# append ftp.x.com, then print the count\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "3", "label": "prints the count 3"},
+        {"type": "source", "assert": "calls", "value": "append", "label": "uses append()"},
+        {"type": "state", "name": "hosts", "equals": ["www.x.com", "dev.x.com", "ftp.x.com"], "label": "hosts ends with three items"}
+      ],
+      "hints": ["`hosts.append(\"ftp.x.com\")` adds to the end.", "`len(hosts)` returns the count."]
+    },
+    {
+      "id": "w2-e3",
+      "prompt": "Loop over `hosts`. Print each host, and for any host containing \"dev\", print it followed by \"  <-- review\".",
+      "starter": "hosts = [\"www.x.com\", \"dev.x.com\"]\n# flag dev hosts for review\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "www.x.com\ndev.x.com  <-- review", "label": "flags only the dev host"},
+        {"type": "source", "assert": "uses", "value": "if", "label": "uses an if statement"},
+        {"type": "source", "assert": "uses", "value": "in", "label": "uses the in operator"}
+      ],
+      "hints": ["`if \"dev\" in host:` is true when the text appears in the host."]
+    },
+    {
+      "id": "w2-e4",
+      "prompt": "Build a dictionary `profile` with keys \"domain\" (\"x.com\") and \"registrar\" (\"ACME\"). Print the registrar by key.",
+      "starter": "# build the profile dict, then print the registrar\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "ACME", "label": "prints the registrar value"},
+        {"type": "state", "name": "profile", "equals": {"domain": "x.com", "registrar": "ACME"}, "label": "profile has both fields"}
+      ],
+      "hints": ["A dict literal: `profile = {\"domain\": \"x.com\", \"registrar\": \"ACME\"}`", "Index by key: `profile[\"registrar\"]`."]
+    },
+    {
+      "id": "w2-e5",
+      "prompt": "Given profile with a \"subdomains\" list, print each subdomain on its own line.",
+      "starter": "profile = {\"domain\": \"x.com\", \"subdomains\": [\"www\", \"dev\", \"mail\"]}\n# print each subdomain on its own line\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "www\ndev\nmail", "label": "prints each subdomain"},
+        {"type": "source", "assert": "uses", "value": "for", "label": "loops the subdomain list"}
+      ],
+      "hints": ["Loop the list with: for sub in profile[\"subdomains\"]:", "Reach the list with `profile[\"subdomains\"]`, then loop it."]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w2-s1",
+      "prompt": "Stretch: count how many hosts are flagged for review (contain \"dev\", \"test\", or \"staging\") and print \"Flagged N host(s)\".",
+      "starter": "hosts = [\"www.x.com\", \"dev.x.com\", \"test.x.com\"]\n# count and report flagged hosts\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "regex", "expected": "Flagged 2 host\\(s\\)", "label": "reports two flagged hosts"}
+      ],
+      "hints": ["Keep a counter starting at 0 and add 1 inside the if."]
+    }
+  ]
+}

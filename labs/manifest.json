@@ -1,0 +1,66 @@
+[
+  {
+    "week": 1,
+    "file": "labs/week-01.json",
+    "title": "Core Python \u2014 Variables, Strings, Numbers & Print",
+    "intro": "Before you write tools that scan networks, you must first write simple programs that print results clearly. Master variables, strings, and numbers. The cybersecurity tools you will build this term are made of these building blocks.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 2,
+    "file": "labs/week-02.json",
+    "title": "Core Python \u2014 Lists, Loops & Dictionaries",
+    "intro": "Recon produces lists of hosts and labeled facts. Practice the Python that stores and walks that data \u2014 the same constructs behind every tool you will write this term.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 3,
+    "file": "labs/week-03.json",
+    "title": "Core Python \u2014 Functions, Modules & Error Handling",
+    "intro": "Reconnaissance tools are built from reusable functions that import capability from the standard library and handle failure gracefully. Practice the Python that powers every scanner you will write this term.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 4,
+    "file": "labs/week-04.json",
+    "title": "Core Python \u2014 requests & JSON",
+    "intro": "Enumeration turns open ports into actionable intelligence. Practice the Python that speaks HTTP and parses JSON \u2014 the same constructs behind every web-enumeration tool you will write this term.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 5,
+    "file": "labs/week-05.json",
+    "title": "Core Python \u2014 Bytes, Encoding & Hashing",
+    "intro": "Cryptography begins with transforming data \u2014 encoding it for transport, hashing it for verification, and encrypting it for secrecy. Practice the Python that moves between bytes and text, generates digests, and identifies hash algorithms by their fingerprints.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 6,
+    "file": "labs/week-06.json",
+    "title": "Core Python \u2014 Classes & subprocess",
+    "intro": "Gaining access requires keeping track of session state across multiple attempts. Practice the Python that models that state with a class \u2014 then call a mocked system command the way a real tool would.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 7,
+    "file": "labs/week-07.json",
+    "title": "Core Python \u2014 Bytes & Payload Assembly",
+    "intro": "Exploit development demands precision at the byte level. Practice constructing exact payloads with bytes repetition, struct packing, and concatenation \u2014 the same constructs that will carry a real exploit in Milestone 3.",
+    "required": 5,
+    "stretch": 1
+  },
+  {
+    "week": 8,
+    "file": "labs/week-08.json",
+    "title": "Core Python \u2014 Command-Line Tools with argparse",
+    "intro": "Professional tools are not one-off scripts \u2014 they are polished command-line programs that accept options, report clearly, and chain together. This week you package your week's work into a reusable scanner using `argparse`, the standard library for turning scripts into tools.",
+    "required": 5,
+    "stretch": 1
+  }
+]

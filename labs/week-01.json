@@ -1,0 +1,75 @@
+{
+  "week": 1,
+  "title": "Core Python — Variables, Strings, Numbers & Print",
+  "masteryPercent": 100,
+  "intro": "Before you write tools that scan networks, you must first write simple programs that print results clearly. Master variables, strings, and numbers. The cybersecurity tools you will build this term are made of these building blocks.",
+  "exercises": [
+    {
+      "id": "w1-e1",
+      "prompt": "Print a two-line banner with a centered title. Line 1: exactly \"========================\". Line 2: exactly \"   Recon Report\". Hints: You will write two print statements.",
+      "starter": "# Print the banner\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "========================\n   Recon Report", "label": "prints the exact banner with correct spacing"}
+      ],
+      "hints": ["Use two print statements.", "Type the text exactly as shown — spaces matter."]
+    },
+    {
+      "id": "w1-e2",
+      "prompt": "Set a variable `name` to \"Maya\". Using an f-string, print the sentence \"Hello, Maya.\"",
+      "starter": "# Set name and greet\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Hello, Maya.", "label": "prints the greeting with the correct name"},
+        {"type": "state", "name": "name", "equals": "Maya", "label": "name variable is set to Maya"}
+      ],
+      "hints": ["An f-string starts with an `f` before the quote: f\"Hello, {name}.\""]
+    },
+    {
+      "id": "w1-e3",
+      "prompt": "Set a variable `ports` to the result of adding 20 and 2. Print the sentence \"22 ports\" using an f-string.",
+      "starter": "# Calculate ports and print\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "22 ports", "label": "prints 22 ports with the calculated value"},
+        {"type": "state", "name": "ports", "equals": 22, "label": "ports variable equals 22"}
+      ],
+      "hints": ["Write: ports = 20 + 2", "Then print with an f-string: f\"{ports} ports\""]
+    },
+    {
+      "id": "w1-e4",
+      "prompt": "You are given two variables: `first=\"Ada\"` and `last=\"Lovelace\"`. Using string concatenation or an f-string, print \"Lovelace, Ada\" (last name first).",
+      "starter": "first = \"Ada\"\nlast = \"Lovelace\"\n# Print last name, first name\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Lovelace, Ada", "label": "prints last name followed by first name"},
+        {"type": "source", "assert": "uses", "value": "first", "label": "uses the first variable"},
+        {"type": "source", "assert": "uses", "value": "last", "label": "uses the last variable"}
+      ],
+      "hints": ["You can join strings: last + \", \" + first", "Or use an f-string: f\"{last}, {first}\""]
+    },
+    {
+      "id": "w1-e5",
+      "prompt": "Set a variable `count` to `int(\"443\")` (convert the string \"443\" to an integer). Print the result of `count + 1` using an f-string or concatenation.",
+      "starter": "# Convert and print\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "444", "label": "prints 444 (count plus one)"},
+        {"type": "state", "name": "count", "isType": "int", "label": "count is an integer type"}
+      ],
+      "hints": ["Use int() to convert text to a number: count = int(\"443\")", "Then print: print(f\"{count + 1}\")"]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w1-s1",
+      "prompt": "Stretch: You work with profiles. Set three variables: `name=\"Jordan\"`, `role=\"analyst\"`, and `id=\"SEC-001\"`. Using an f-string, print \"Jordan | analyst | SEC-001\" with pipes and spaces.",
+      "starter": "# Build and print the profile line\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Jordan | analyst | SEC-001", "label": "prints the profile line with correct pipes and spacing"}
+      ],
+      "hints": ["Build it in one line with an f-string: f\"{name} | {role} | {id}\""]
+    }
+  ]
+}

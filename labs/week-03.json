@@ -1,0 +1,78 @@
+{
+  "week": 3,
+  "title": "Core Python — Functions, Modules & Error Handling",
+  "masteryPercent": 100,
+  "intro": "Reconnaissance tools are built from reusable functions that import capability from the standard library and handle failure gracefully. Practice the Python that powers every scanner you will write this term.",
+  "exercises": [
+    {
+      "id": "w3-e1",
+      "prompt": "Define a function `square(n)` that returns `n*n`. Call it with 9 and print the result.",
+      "starter": "# define square and call it with 9\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "81", "label": "prints 81"},
+        {"type": "source", "assert": "defines", "value": "square", "label": "defines a function square"}
+      ],
+      "hints": ["Use `def square(n):` to define it.", "Return the result with `return n*n`."]
+    },
+    {
+      "id": "w3-e2",
+      "prompt": "Define a function `is_even(n)` that returns `True` if n is even (n % 2 == 0), `False` otherwise. Print `is_even(4)` then `is_even(7)`, each on its own line (print just the True/False value, nothing else).",
+      "starter": "# define is_even and print the results\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "True\nFalse", "label": "prints True then False"},
+        {"type": "source", "assert": "defines", "value": "is_even", "label": "defines a function is_even"}
+      ],
+      "hints": ["Return `n % 2 == 0` to check if even.", "Print each call directly: `print(is_even(4))` then `print(is_even(7))`."]
+    },
+    {
+      "id": "w3-e3",
+      "prompt": "Import the `math` module. Print `math.sqrt(16)` as a float.",
+      "starter": "# import math and print sqrt(16)\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "4.0", "label": "prints 4.0"},
+        {"type": "source", "assert": "uses", "value": "import", "label": "uses import statement"}
+      ],
+      "hints": ["Start with `import math`.", "Use `math.sqrt()` to get the square root."]
+    },
+    {
+      "id": "w3-e4",
+      "prompt": "Wrap `int(\"abc\")` in a `try`/`except ValueError` block. If it fails, print \"bad number\".",
+      "starter": "# wrap int(\"abc\") in try/except and print the message\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "bad number", "label": "prints bad number"},
+        {"type": "source", "assert": "uses", "value": "try", "label": "uses try block"},
+        {"type": "source", "assert": "uses", "value": "except", "label": "uses except block"}
+      ],
+      "hints": ["Put `int(\"abc\")` inside a `try:` block.", "Catch `ValueError` with `except ValueError:`."]
+    },
+    {
+      "id": "w3-e5",
+      "prompt": "Define a function `first_word(line)` that returns `line.split()[0]` (the first word). Call it with \"nmap -sV host\" and print the result.",
+      "starter": "# define first_word and call it\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "nmap", "label": "prints nmap"},
+        {"type": "source", "assert": "defines", "value": "first_word", "label": "defines a function first_word"},
+        {"type": "source", "assert": "calls", "value": "split", "label": "calls split method"}
+      ],
+      "hints": ["Use `line.split()` to break the line into words.", "Return the first element with `[0]`."]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w3-s1",
+      "prompt": "Stretch: define a function `line_count(text)` that counts the number of lines in a multi-line string and returns it. Call it with a string containing 3 newlines (4 lines total) and print the count.",
+      "starter": "# define line_count and call it with a multi-line string\ntext = \"line one\\nline two\\nline three\\nline four\"\n# call and print the count\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "4", "label": "prints 4"},
+        {"type": "source", "assert": "defines", "value": "line_count", "label": "defines a function line_count"}
+      ],
+      "hints": ["Split the text by newline with `text.split('\\n')`.", "Return the length of the resulting list."]
+    }
+  ]
+}

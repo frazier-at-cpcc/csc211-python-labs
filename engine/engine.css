@@ -1,0 +1,22 @@
+:root { --gray:#54565A; --gold:#B4A269; --blue:#005D83; --pass:#2E7D32; --fail:#B4651E; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, Arial, sans-serif; color: var(--gray); margin: 0; padding: 1.5rem; line-height: 1.5; max-width: 60rem; }
+a { color: var(--blue); }
+.crumb { font-size: .95rem; margin-bottom: .5rem; }
+h1 { color: var(--blue); margin: .2rem 0; }
+h2 { color: var(--blue); font-size: 1.1rem; }
+#lab-intro { max-width: 60rem; }
+.exercise { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.stretch { color: var(--gold); font-weight: normal; }
+.controls { margin: .5rem 0; display: flex; gap: .5rem; flex-wrap: wrap; }
+button { font: inherit; padding: .4rem .9rem; border: 1px solid var(--blue); background: var(--blue); color: #fff; border-radius: 6px; cursor: pointer; }
+button.hint { background: #fff; color: var(--blue); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.output { background: #F4F3EE; padding: .6rem; border-radius: 6px; font-family: Consolas, monospace; white-space: pre-wrap; min-height: 1.5rem; }
+.results { list-style: none; padding: 0; }
+.results .pass { color: var(--pass); } .results .fail { color: var(--fail); }
+.hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; }
+.CodeMirror { border: 1px solid #ccc; height: auto; font-family: Consolas, monospace; }
+#status, #score { font-weight: bold; margin-top: 1rem; }
+#score.passed { color: var(--pass); }

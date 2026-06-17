@@ -1,0 +1,76 @@
+{
+  "week": 7,
+  "title": "Core Python — Bytes & Payload Assembly",
+  "masteryPercent": 100,
+  "intro": "Exploit development demands precision at the byte level. Practice constructing exact payloads with bytes repetition, struct packing, and concatenation — the same constructs that will carry a real exploit in Milestone 3.",
+  "exercises": [
+    {
+      "id": "w7-e1",
+      "prompt": "Build `buf = b\"A\" * 8` and print its length.",
+      "starter": "# build a bytes buffer by repeating b\"A\" 8 times\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "8", "label": "prints the length 8"},
+        {"type": "source", "assert": "uses", "value": "len", "label": "uses len() to get buffer length"}
+      ],
+      "hints": ["Multiply a bytes literal by a number: `b\"A\" * 8`", "Then use `len(buf)` to get its length."]
+    },
+    {
+      "id": "w7-e2",
+      "prompt": "Import `struct` and print the length of `struct.pack(\"<I\", 1)`.",
+      "starter": "# pack a 32-bit integer and print its length\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "4", "label": "prints the length 4"},
+        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack"},
+        {"type": "source", "assert": "uses", "value": "import struct", "label": "imports struct"}
+      ],
+      "hints": ["Import struct: `import struct`", "`struct.pack(\"<I\", 1)` packs a 32-bit little-endian integer (always 4 bytes)."]
+    },
+    {
+      "id": "w7-e3",
+      "prompt": "Pack the address `0x625011AF` using `struct.pack(\"<I\", 0x625011AF)` and print its `.hex()` representation.",
+      "starter": "import struct\n# pack 0x625011AF and print its hex\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "af115062", "label": "prints the hex 'af115062' (little-endian)"},
+        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack"}
+      ],
+      "hints": ["Little-endian means bytes are reversed: `0x625011AF` becomes `af 11 50 62`.", "Use `.hex()` to convert bytes to a hex string: `packed.hex()`"]
+    },
+    {
+      "id": "w7-e4",
+      "prompt": "Assemble `payload = b\"A\"*4 + struct.pack(\"<I\", 0xDEADBEEF) + b\"C\"*4` and print its length.",
+      "starter": "import struct\n# build the payload and print its length\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "12", "label": "prints the length 12"},
+        {"type": "source", "assert": "uses", "value": "struct.pack", "label": "uses struct.pack in payload"}
+      ],
+      "hints": ["Concatenate bytes with `+`: first 4 A's, then the packed 4 bytes, then 4 C's.", "Total: 4 + 4 + 4 = 12 bytes."]
+    },
+    {
+      "id": "w7-e5",
+      "prompt": "Build a simple cyclic pattern by joining pairs `b\"A0\"`, `b\"A1\"`, ..., `b\"A9\"`, `b\"B0\"`, etc. up to 16 pairs. Print the first 4 bytes as a string (slice `pattern[:4].decode()`).",
+      "starter": "# build a cyclic pattern and print its first 4 bytes\npattern = b\"\".join([f\"A{i}\".encode() for i in range(10)] + [f\"B{i}\".encode() for i in range(6)])\n# print the first 4 bytes\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "A0A1", "label": "prints the first 4 bytes 'A0A1'"},
+        {"type": "source", "assert": "uses", "value": "decode", "label": "uses .decode() to convert bytes to string"}
+      ],
+      "hints": ["The pattern is already built for you; just slice and decode the first 4 bytes.", "`pattern[:4].decode()` converts bytes to a string."]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w7-s1",
+      "prompt": "Stretch: Given an offset (e.g. 8), build `b\"A\"*offset + struct.pack(\"<I\", 0x41414141)` (a stand-in EIP value) and print the total length.",
+      "starter": "import struct\noffset = 8\n# build the payload with filler + EIP and print its length\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "12", "label": "prints the total length 12 (8 + 4)"}
+      ],
+      "hints": ["The payload is: filler (offset bytes) + packed EIP (4 bytes).", "Total length: offset + 4."]
+    }
+  ]
+}

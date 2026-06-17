@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSC-211 · Core Python Labs</title>
+  <meta name="description" content="Interactive, in-browser Python practice labs for CSC-211 Ethical Hacking with Python I. Write and run real Python with instant auto-graded feedback — no install, no sign-in.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="kicker">CSC-211 · Ethical Hacking with Python I</p>
+      <h1>Core Python Labs</h1>
+      <p class="lede">Eight short, interactive labs that build Python from zero — one rung at a
+        time, in the browser. Write real code, run it, and get instant feedback. No install,
+        no account, nothing to submit here.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="note" aria-label="About these labs">
+      <p><strong>How it works.</strong> Each lab runs a real Python interpreter
+        (<a href="https://pyodide.org">Pyodide</a>) entirely in your browser. Type a solution,
+        press <em>Run</em> to see the output, and <em>Check</em> to grade it against the exercise's
+        goals. Work through them in order — each week assumes only what earlier weeks introduced.</p>
+      <p class="firstload">The first lab you open downloads the Python runtime (a few seconds);
+        after that it is instant.</p>
+    </section>
+
+    <section class="note ethics" aria-label="Authorized use">
+      <p><strong>Authorized use.</strong> These labs teach Python in a security context, but they
+        contain only self-contained language practice — no scanning, no network or system access,
+        and no real targets. The offensive techniques in the course are practiced only inside the
+        college-provided isolated lab environment, against authorized systems. Skill carries the
+        obligation to use it lawfully and with permission.</p>
+    </section>
+
+    <h2 class="section-title">The labs</h2>
+    <ul id="lab-grid" class="grid" aria-busy="true">
+      <li class="loading">Loading labs…</li>
+    </ul>
+  </main>
+
+  <footer class="wrap site-foot">
+    <p>Open educational resource · <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>
+      — Central Piedmont Community College / Frazier Smith.</p>
+    <p class="muted">Progress checkmarks are stored only in this browser.</p>
+  </footer>
+
+  <script type="module">
+    const grid = document.getElementById('lab-grid');
+    try {
+      const labs = await (await fetch('labs/manifest.json')).json();
+      grid.innerHTML = '';
+      for (const lab of labs) {
+        const wk = String(lab.week).padStart(2, '0');
+        const done = (() => { try { return localStorage.getItem(`csc211-lab-${wk}`) === 'passed'; } catch (_) { return false; } })();
+        // strip the shared "Core Python — " prefix for a tighter card title
+        const topic = lab.title.replace(/^Core Python\s*[—-]\s*/, '');
+        const li = document.createElement('li');
+        li.className = 'card' + (done ? ' done' : '');
+        const a = document.createElement('a');
+        a.href = `lab.html?week=${lab.week}`;
+        a.innerHTML = `
+          <span class="badge">Week ${lab.week}${done ? ' <span class="tick" title="completed">✓</span>' : ''}</span>
+          <span class="topic"></span>
+          <span class="meta">${lab.required} exercises${lab.stretch ? ` · ${lab.stretch} stretch` : ''}</span>`;
+        a.querySelector('.topic').textContent = topic;
+        li.appendChild(a);
+        grid.appendChild(li);
+      }
+      grid.setAttribute('aria-busy', 'false');
+    } catch (_) {
+      grid.innerHTML = '<li class="loading">Could not load the lab list.</li>';
+    }
+  </script>
+</body>
+</html>

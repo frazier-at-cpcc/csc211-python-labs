@@ -1,0 +1,106 @@
+{
+  "week": 6,
+  "title": "Core Python — Classes & subprocess",
+  "masteryPercent": 100,
+  "intro": "Gaining access requires keeping track of session state across multiple attempts. Practice the Python that models that state with a class — then call a mocked system command the way a real tool would.",
+  "preload": [
+    "class _CompletedProcess:\n    def __init__(self, args, stdout, returncode=0):\n        self.args = args\n        self.stdout = stdout\n        self.returncode = returncode\nclass _Subprocess:\n    _outputs = {\n        'whoami': 'labuser\\n',\n        'hostname': 'target-box\\n',\n        'id': 'uid=1001(labuser) gid=1001(labuser) groups=1001(labuser)\\n',\n    }\n    def run(self, args, capture_output=False, text=False, **kw):\n        cmd = args[0] if isinstance(args, list) else args\n        out = self._outputs.get(cmd, '')\n        return _CompletedProcess(args, out)\nsubprocess = _Subprocess()\n"
+  ],
+  "exercises": [
+    {
+      "id": "w6-e1",
+      "prompt": "Define a class `LoginSession` with `__init__(self, host, user)` that stores `host` and `user` as attributes. Create an instance `s = LoginSession(\"10.20.0.30\", \"admin\")` and print `s.host`.",
+      "starter": "# Define LoginSession with __init__ storing host and user\n# Then create s = LoginSession(\"10.20.0.30\", \"admin\") and print s.host\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "10.20.0.30", "label": "prints the host 10.20.0.30"},
+        {"type": "source", "assert": "uses", "value": "class LoginSession", "label": "defines the LoginSession class"},
+        {"type": "source", "assert": "uses", "value": "__init__", "label": "defines __init__"},
+        {"type": "source", "assert": "uses", "value": "self.host", "label": "stores self.host"}
+      ],
+      "hints": [
+        "Start with `class LoginSession:` then indent `def __init__(self, host, user):` beneath it.",
+        "Inside `__init__`, write `self.host = host` and `self.user = user` to save the values.",
+        "Create an instance: `s = LoginSession(\"10.20.0.30\", \"admin\")`, then `print(s.host)`."
+      ]
+    },
+    {
+      "id": "w6-e2",
+      "prompt": "Extend `LoginSession` so `__init__` also sets `self.attempts = 0`. Add a method `try_login(self, pw)` that increments `self.attempts` by 1. Create `s = LoginSession(\"10.20.0.30\", \"admin\")`, call `s.try_login(\"abc\")` twice, and print `s.attempts`.",
+      "starter": "# Extend LoginSession: add self.attempts=0 and a try_login method\n# that increments self.attempts by 1 each call\n# Create s, call try_login twice, print s.attempts\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "2", "label": "prints 2 after two calls"},
+        {"type": "source", "assert": "defines", "value": "try_login", "label": "defines try_login method"},
+        {"type": "source", "assert": "uses", "value": "self.attempts", "label": "uses self.attempts"}
+      ],
+      "hints": [
+        "In `__init__`, add `self.attempts = 0` after the other attributes.",
+        "Define `def try_login(self, pw):` inside the class (indented), and write `self.attempts += 1` inside it.",
+        "After creating `s`, call `s.try_login(\"abc\")` twice, then `print(s.attempts)`."
+      ]
+    },
+    {
+      "id": "w6-e3",
+      "prompt": "Add a `self.cracked = False` attribute to `__init__`. In `try_login`, set `self.cracked = True` when `pw == \"sunshine\"`. Create `s`, call `s.try_login(\"sunshine\")`, and print `s.cracked`.",
+      "starter": "# Add self.cracked=False to __init__\n# In try_login, set self.cracked=True if pw == \"sunshine\"\n# Create s, call try_login(\"sunshine\"), print s.cracked\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "True", "label": "prints True after the correct password"},
+        {"type": "source", "assert": "uses", "value": "self.cracked", "label": "uses self.cracked"},
+        {"type": "source", "assert": "uses", "value": "sunshine", "label": "compares against sunshine"}
+      ],
+      "hints": [
+        "In `__init__`, add `self.cracked = False`.",
+        "Inside `try_login`, add `if pw == \"sunshine\": self.cracked = True`.",
+        "After `s.try_login(\"sunshine\")`, print `s.cracked` — it should be `True`."
+      ]
+    },
+    {
+      "id": "w6-e4",
+      "prompt": "Given `passwords = [\"letmein\", \"123456\", \"sunshine\", \"qwerty\"]`, create `s = LoginSession(\"10.20.0.30\", \"admin\")` and loop `passwords`, calling `s.try_login(pw)` each iteration. Break the loop when `s.cracked` is `True` and print the recovered password.",
+      "starter": "passwords = [\"letmein\", \"123456\", \"sunshine\", \"qwerty\"]\n\nclass LoginSession:\n    def __init__(self, host, user):\n        self.host = host\n        self.user = user\n        self.attempts = 0\n        self.cracked = False\n    def try_login(self, pw):\n        self.attempts += 1\n        if pw == \"sunshine\":\n            self.cracked = True\n        return self.cracked\n\n# Create s, loop passwords, break on success, print the recovered password\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "sunshine", "label": "prints the recovered password sunshine"},
+        {"type": "source", "assert": "uses", "value": "for", "label": "uses a for loop"},
+        {"type": "source", "assert": "uses", "value": "break", "label": "uses break to stop on success"}
+      ],
+      "hints": [
+        "Loop with `for pw in passwords:` and call `s.try_login(pw)` inside.",
+        "Check `if s.cracked:` after the call, then `print(pw)` and `break`."
+      ]
+    },
+    {
+      "id": "w6-e5",
+      "prompt": "Using the mocked `subprocess` (already loaded — no import needed), capture the output of `subprocess.run([\"whoami\"], capture_output=True, text=True)`. Print the `.stdout` value stripped of whitespace.",
+      "starter": "# subprocess is already available — no import needed\n# Run [\"whoami\"], capture output, print stdout stripped\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "labuser", "label": "prints labuser"},
+        {"type": "source", "assert": "calls", "value": "run", "label": "calls subprocess.run"},
+        {"type": "source", "assert": "uses", "value": "stdout", "label": "reads the stdout attribute"}
+      ],
+      "hints": [
+        "`result = subprocess.run([\"whoami\"], capture_output=True, text=True)` runs the command.",
+        "`result.stdout` holds the output string; call `.strip()` to remove the trailing newline before printing."
+      ]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w6-s1",
+      "prompt": "Stretch: using the same `LoginSession` class and `passwords` list from Exercise 4, print how many attempts it took to recover the password. Format: `Recovered in N attempt(s)`.",
+      "starter": "passwords = [\"letmein\", \"123456\", \"sunshine\", \"qwerty\"]\n\nclass LoginSession:\n    def __init__(self, host, user):\n        self.host = host\n        self.user = user\n        self.attempts = 0\n        self.cracked = False\n    def try_login(self, pw):\n        self.attempts += 1\n        if pw == \"sunshine\":\n            self.cracked = True\n        return self.cracked\n\n# Loop passwords, break on success, print how many attempts it took\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Recovered in 3 attempt(s)", "label": "reports 3 attempts to recover sunshine"},
+        {"type": "source", "assert": "uses", "value": "attempts", "label": "reads the attempts attribute"}
+      ],
+      "hints": [
+        "After breaking the loop, `s.attempts` holds the total tries.",
+        "Print with an f-string: `print(f\"Recovered in {s.attempts} attempt(s)\")`."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "week": 8,
+  "title": "Core Python — Command-Line Tools with argparse",
+  "masteryPercent": 100,
+  "intro": "Professional tools are not one-off scripts — they are polished command-line programs that accept options, report clearly, and chain together. This week you package your week's work into a reusable scanner using `argparse`, the standard library for turning scripts into tools.",
+  "exercises": [
+    {
+      "id": "w8-e1",
+      "prompt": "Build an `argparse.ArgumentParser`, add a `--target` argument, parse the arguments list `[\"--target\", \"10.0.0.1\"]`, and print `args.target`.",
+      "starter": "import argparse\n\n# build the parser and add --target\n# parse the list [\"--target\", \"10.0.0.1\"]\n# print args.target\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "10.0.0.1", "label": "prints the target argument"},
+        {"type": "source", "assert": "uses", "value": "ArgumentParser", "label": "creates an ArgumentParser"},
+        {"type": "source", "assert": "calls", "value": "add_argument", "label": "adds --target argument"}
+      ],
+      "hints": ["Create the parser: `parser = argparse.ArgumentParser()`", "Add the argument: `parser.add_argument(\"--target\")`", "Parse the list: `args = parser.parse_args([\"--target\", \"10.0.0.1\"])` (note: explicit list, not sys.argv)"]
+    },
+    {
+      "id": "w8-e2",
+      "prompt": "Add a `--verbose` flag with `action=\"store_true\"`. Parse `[\"--target\", \"10.0.0.1\", \"--verbose\"]`. Print `args.verbose`.",
+      "starter": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --verbose with action=\"store_true\"\n# parse with --verbose set\n# print args.verbose\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "True", "label": "prints True for verbose flag"},
+        {"type": "source", "assert": "uses", "value": "store_true", "label": "uses store_true action"}
+      ],
+      "hints": ["Use `action=\"store_true\"`: `parser.add_argument(\"--verbose\", action=\"store_true\")`", "The flag does not need a value — just include it in the parse list."]
+    },
+    {
+      "id": "w8-e3",
+      "prompt": "Add a `--ports` argument with `nargs=\"+\"` and `type=int`. Parse `[\"--ports\", \"22\", \"80\"]`. Print the ports list.",
+      "starter": "import argparse\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --ports with nargs=\"+\" and type=int\n# parse [\"--ports\", \"22\", \"80\"]\n# print args.ports\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "[22, 80]", "label": "prints the ports list as integers"},
+        {"type": "source", "assert": "uses", "value": "nargs", "label": "uses nargs"},
+        {"type": "source", "assert": "uses", "value": "type=int", "label": "uses type=int"}
+      ],
+      "hints": ["Use `nargs=\"+\"` to accept one or more values.", "Use `type=int` to convert strings to integers: `parser.add_argument(\"--ports\", nargs=\"+\", type=int)`"]
+    },
+    {
+      "id": "w8-e4",
+      "prompt": "Define a function `def scan(target): print(f\"scanning {target}\")`. Build the parser, parse `[\"--target\", \"10.0.0.1\"]`, and call `scan(args.target)`.",
+      "starter": "import argparse\n\n# define scan(target) that prints f\"scanning {target}\"\n# build the parser with --target\n# parse [\"--target\", \"10.0.0.1\"]\n# call scan(args.target)\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "scanning 10.0.0.1", "label": "prints scanning message with target"},
+        {"type": "source", "assert": "defines", "value": "scan", "label": "defines the scan function"}
+      ],
+      "hints": ["Define the function first: `def scan(target):`", "Use an f-string inside: `print(f\"scanning {target}\")`", "After parsing, call: `scan(args.target)`"]
+    },
+    {
+      "id": "w8-e5",
+      "prompt": "Call `parser.format_help()` and verify that its output contains the string `--target`. (Use a regex check; the exact format may vary.)",
+      "starter": "import argparse\n\nparser = argparse.ArgumentParser(description=\"A simple scanner\")\nparser.add_argument(\"--target\", help=\"target host\")\n# call parser.format_help() and print it\n# the output must contain '--target'\n",
+      "required": true,
+      "checks": [
+        {"type": "source", "assert": "calls", "value": "format_help", "label": "calls format_help()"},
+        {"type": "stdout", "mode": "regex", "expected": "--target", "label": "help text contains --target"}
+      ],
+      "hints": ["Call `help_text = parser.format_help()`", "Print it: `print(help_text)`", "`format_help()` returns the auto-generated help string."]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w8-s1",
+      "prompt": "Stretch: Add a `--mode` argument with `choices=[\"recon\", \"scan\"]`. Define two functions `recon(target)` and `scan(target)`. Route to the correct function based on the parsed mode: call `recon(args.target)` when mode is \"recon\", or `scan(args.target)` when mode is \"scan\" (the two functions are already defined in the starter).",
+      "starter": "import argparse\n\ndef recon(target):\n    print(f\"recon {target}\")\n\ndef scan(target):\n    print(f\"scan {target}\")\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--target\")\n# add --mode with choices=[\"recon\", \"scan\"]\n# parse [\"--target\", \"10.0.0.1\", \"--mode\", \"scan\"]\n# call the appropriate function\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "scan 10.0.0.1", "label": "calls the correct function based on mode"},
+        {"type": "source", "assert": "uses", "value": "choices", "label": "uses choices for --mode"}
+      ],
+      "hints": ["Use `choices=[\"recon\", \"scan\"]`: `parser.add_argument(\"--mode\", choices=[\"recon\", \"scan\"])`", "After parsing, check `args.mode` and call the appropriate function.", "Use an if/elif block: `if args.mode == \"scan\": scan(args.target)`"]
+    }
+  ]
+}

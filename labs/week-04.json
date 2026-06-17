@@ -1,0 +1,103 @@
+{
+  "week": 4,
+  "title": "Core Python — requests & JSON",
+  "masteryPercent": 100,
+  "intro": "Enumeration turns open ports into actionable intelligence. Practice the Python that speaks HTTP and parses JSON — the same constructs behind every web-enumeration tool you will write this term.",
+  "preload": [
+    "import json as _json\nclass _Response:\n    def __init__(self, url):\n        self.status_code = 200\n        self.url = url\n        _data = {\n            'server': 'Apache/2.2.8 (Ubuntu)',\n            'port': 80,\n            'service': 'http',\n            'version': '2.2.8',\n            'users': [\n                {'id': 1, 'name': 'administrator', 'role': 'admin', 'active': True},\n                {'id': 2, 'name': 'jdoe',          'role': 'user',  'active': True},\n                {'id': 3, 'name': 'svc-backup',    'role': 'admin', 'active': False},\n                {'id': 4, 'name': 'guest',          'role': 'user',  'active': False}\n            ]\n        }\n        self.text = _json.dumps(_data)\n        self._data = _data\n    def json(self):\n        return self._data\nclass _Requests:\n    def get(self, url, **kw):\n        return _Response(url)\n    def post(self, url, **kw):\n        return _Response(url)\nrequests = _Requests()\n"
+  ],
+  "exercises": [
+    {
+      "id": "w4-e1",
+      "prompt": "Parse the JSON string `s` with `json.loads` and print the value of the `\"server\"` key.",
+      "starter": "import json\ns = '{\"server\": \"Apache\", \"port\": 80}'\n# parse s and print the server value\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Apache", "label": "prints the server value Apache"},
+        {"type": "source", "assert": "uses", "value": "json", "label": "imports or uses json"},
+        {"type": "source", "assert": "calls", "value": "loads", "label": "calls json.loads"}
+      ],
+      "hints": [
+        "`import json` then `data = json.loads(s)` turns the string into a dict.",
+        "Access the value with `data[\"server\"]` and pass it to `print()`."
+      ]
+    },
+    {
+      "id": "w4-e2",
+      "prompt": "A list of user dicts is given. Loop over `users` and print each user's `\"name\"` on its own line.",
+      "starter": "users = [\n    {\"id\": 1, \"name\": \"administrator\"},\n    {\"id\": 2, \"name\": \"jdoe\"},\n    {\"id\": 3, \"name\": \"svc-backup\"}\n]\n# print each user's name on its own line\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "administrator\njdoe\nsvc-backup", "label": "prints all three names in order"},
+        {"type": "source", "assert": "uses", "value": "for", "label": "uses a for loop"},
+        {"type": "source", "assert": "uses", "value": "name", "label": "indexes the name key"}
+      ],
+      "hints": [
+        "Loop with `for user in users:` — each `user` is a dictionary.",
+        "Inside the loop: `print(user[\"name\"])` prints that user's name."
+      ]
+    },
+    {
+      "id": "w4-e3",
+      "prompt": "Use the mocked `requests` (already loaded) to GET `\"http://target/api\"`. Print the response's `status_code`.",
+      "starter": "# requests is already available — no import needed\nr = requests.get(\"http://target/api\")\n# print the status code\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "200", "label": "prints status code 200"},
+        {"type": "source", "assert": "calls", "value": "get", "label": "calls requests.get"},
+        {"type": "source", "assert": "uses", "value": "status_code", "label": "reads status_code attribute"}
+      ],
+      "hints": [
+        "`r = requests.get(\"http://target/api\")` stores the response object.",
+        "`r.status_code` is an integer; pass it to `print()`."
+      ]
+    },
+    {
+      "id": "w4-e4",
+      "prompt": "Use `requests.get` on `\"http://target/api\"`, call `.json()` on the response, and print the value of the `\"service\"` key.",
+      "starter": "# requests is already available\nr = requests.get(\"http://target/api\")\n# parse the JSON body and print the service field\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "http", "label": "prints the service value http"},
+        {"type": "source", "assert": "calls", "value": "json", "label": "calls .json() on the response"},
+        {"type": "source", "assert": "uses", "value": "service", "label": "indexes the service key"}
+      ],
+      "hints": [
+        "`data = r.json()` parses the response body into a Python dict.",
+        "`data[\"service\"]` is the value you want to print."
+      ]
+    },
+    {
+      "id": "w4-e5",
+      "prompt": "The API response contains a `\"users\"` list. GET `\"http://target/api\"`, parse the JSON, then print the `\"name\"` of every user whose `\"role\"` is `\"admin\"`.",
+      "starter": "# requests is already available\n# GET the API, parse JSON, filter by role == \"admin\", print names\n",
+      "required": true,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "administrator\nsvc-backup", "label": "prints administrator then svc-backup"},
+        {"type": "source", "assert": "calls", "value": "get", "label": "calls requests.get"},
+        {"type": "source", "assert": "uses", "value": "if", "label": "uses an if statement to filter"},
+        {"type": "source", "assert": "uses", "value": "admin", "label": "compares against \"admin\""}
+      ],
+      "hints": [
+        "`data = requests.get(\"http://target/api\").json()` gives you the full dict.",
+        "Loop `data[\"users\"]`; inside the loop `if user[\"role\"] == \"admin\":` then print the name."
+      ]
+    }
+  ],
+  "stretch": [
+    {
+      "id": "w4-s1",
+      "prompt": "Stretch: GET `\"http://target/api\"`, parse the JSON, and print how many users have `\"active\": True`. Format: `Active users: N`.",
+      "starter": "# requests is already available\n# count and print the number of active users\n",
+      "required": false,
+      "checks": [
+        {"type": "stdout", "mode": "normalized", "expected": "Active users: 2", "label": "reports two active users"},
+        {"type": "source", "assert": "uses", "value": "True", "label": "compares against True"}
+      ],
+      "hints": [
+        "Keep a counter `count = 0` and add 1 for each user where `user[\"active\"] == True`.",
+        "Print with an f-string: `print(f\"Active users: {count}\")`."
+      ]
+    }
+  ]
+}

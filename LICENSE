@@ -1,0 +1,49 @@
+Attribution 4.0 International (CC BY 4.0)
+
+Course: CSC-211 Ethical Hacking with Python I — Open Educational Resource
+Copyright (c) 2026 Central Piedmont Community College / Frazier Smith
+
+This work is licensed under the Creative Commons Attribution 4.0
+International License. You are free to:
+
+  - Share — copy and redistribute the material in any medium or format.
+  - Adapt — remix, transform, and build upon the material for any purpose,
+    even commercially.
+
+The licensor cannot revoke these freedoms as long as you follow the license
+terms.
+
+Under the following terms:
+
+  - Attribution — You must give appropriate credit to "Central Piedmont
+    Community College / Frazier Smith," provide a link to this license, and
+    indicate if changes were made. You may do so in any reasonable manner,
+    but not in any way that suggests the licensor endorses you or your use.
+
+  - No additional restrictions — You may not apply legal terms or
+    technological measures that legally restrict others from doing anything
+    the license permits.
+
+Notices:
+
+  - You do not have to comply with the license for elements of the material
+    in the public domain or where your use is permitted by an applicable
+    exception or limitation.
+
+  - No warranties are given. The license may not give you all of the
+    permissions necessary for your intended use. For example, other rights
+    such as publicity, privacy, or moral rights may limit how you use the
+    material.
+
+The full legal code of this license is available at:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+SAFETY NOTICE
+-------------
+This course teaches defensive and authorized security testing skills. All
+hands-on activities are designed to run ONLY inside the college's isolated
+NetLab teaching environment against instructor-provided practice systems.
+Nothing in this material authorizes testing against systems you do not own
+or lack explicit written permission to assess. Adopters are responsible for
+providing a contained lab environment and for communicating applicable law
+and acceptable-use policy to learners.
