@@ -18,5 +18,8 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .results .pass { color: var(--pass); } .results .fail { color: var(--fail); }
 .hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; }
 .CodeMirror { border: 1px solid #ccc; height: auto; font-family: Consolas, monospace; }
+/* CodeMirror 5 measures its gutter assuming content-box; the global border-box
+   reset above collapses the line-number offset and overlaps the code. Exempt it. */
+.CodeMirror, .CodeMirror * { box-sizing: content-box; }
 #status, #score { font-weight: bold; margin-top: 1rem; }
 #score.passed { color: var(--pass); }
