@@ -20,6 +20,7 @@
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
-  <script type="module" src="engine/engine.mjs"></script>
+  <!-- version query busts the browser cache so a new lab.html always loads its matching engine -->
+  <script type="module" src="engine/engine.mjs?v=2"></script>
 </body>
 </html>
