@@ -17,6 +17,7 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .results { list-style: none; padding: 0; }
 .results .pass { color: var(--pass); } .results .fail { color: var(--fail); }
 .hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; }
+.exercise h2 code, .hinttext code { font-family: Consolas, monospace; font-size: .92em; background: #ECEAE1; color: #1A1A1A; padding: .05em .35em; border-radius: 4px; }
 .CodeMirror { border: 1px solid #ccc; height: auto; font-family: Consolas, monospace; }
 /* CodeMirror 5 measures its gutter assuming content-box; the global border-box
    reset above collapses the line-number offset and overlaps the code. Exempt it. */

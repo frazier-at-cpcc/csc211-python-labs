@@ -21,6 +21,30 @@ function stateNames(ex) {
   return (ex.checks || []).filter((c) => c.type === 'state').map((c) => c.name);
 }
 
+// Render prompt/hint text, turning Markdown-style `inline code` into <code> and
+// **bold** into <strong>. Uses textContent for every span, so author content
+// can never inject HTML.
+function renderInline(el, text) {
+  el.textContent = '';
+  const re = /(`[^`]+`|\*\*[^*]+\*\*)/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+    const tok = m[0];
+    if (tok.startsWith('`')) {
+      const c = document.createElement('code');
+      c.textContent = tok.slice(1, -1);
+      el.appendChild(c);
+    } else {
+      const b = document.createElement('strong');
+      b.textContent = tok.slice(2, -2);
+      el.appendChild(b);
+    }
+    last = re.lastIndex;
+  }
+  if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+}
+
 function renderExercise(ex) {
   const card = document.createElement('section');
   card.className = 'exercise';
@@ -36,7 +60,7 @@ function renderExercise(ex) {
     <ul class="results" aria-live="polite"></ul>
     <p class="hinttext" hidden></p>`;
   const h2 = card.querySelector('.prompt');
-  h2.textContent = ex.prompt;
+  renderInline(h2, ex.prompt);
   if (ex.required === false) {
     const span = document.createElement('span');
     span.className = 'stretch';
@@ -76,7 +100,7 @@ function renderExercise(ex) {
   card.querySelector('.hint').onclick = () => {
     const ht = card.querySelector('.hinttext');
     ht.hidden = false;
-    ht.textContent = ex.hints[Math.min(hintIdx++, ex.hints.length - 1)];
+    renderInline(ht, ex.hints[Math.min(hintIdx++, ex.hints.length - 1)]);
   };
   return card;
 }
@@ -104,6 +128,13 @@ async function boot() {
   const host = $('#exercises');
   for (const ex of LAB.exercises) host.appendChild(renderExercise(ex));
   for (const ex of (LAB.stretch || [])) host.appendChild(renderExercise(ex));
+  // CodeMirror is created during the loop above, before the browser lays out
+  // each editor, so it measures a zero-width character and collapses the
+  // line-number gutter (code then overlaps the numbers). Refresh once layout
+  // has happened so each editor re-measures and reserves the gutter.
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.CodeMirror').forEach((el) => el.CodeMirror && el.CodeMirror.refresh());
+  });
   statusEl.textContent = 'Python loading… (first load fetches the interpreter; give it a few seconds)';
   pyodide = await window.loadPyodide();
   if (Array.isArray(LAB.preload)) {
