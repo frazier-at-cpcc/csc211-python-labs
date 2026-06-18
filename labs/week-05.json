@@ -24,8 +24,8 @@
         }
       ],
       "hints": [
-        "Call `.encode()` on the string: `s.encode()`",
-        "Use `len()` to get the byte count."
+        "Turn the text into bytes by calling `.encode()` on `s`, then measure that bytes object with `len()`.",
+        "Encoding looks like `raw = text.encode()`, and you can size a sequence with `len()` as in `print(len(raw))`."
       ],
       "lesson": {
         "title": "bytes vs str: the encode() / decode() bridge",
@@ -54,8 +54,8 @@
         }
       ],
       "hints": [
-        "Use `hashlib.md5(b\"password\")` to create a hash object.",
-        "Call `.hexdigest()` on the result to get a hex string."
+        "After importing `hashlib`, build an MD5 hash object from the bytes, then read it as a hex string and print that.",
+        "The hashlib pattern is `hashlib.md5(b\"data\").hexdigest()` — swap in your own bytes and print the result."
       ],
       "lesson": {
         "title": "Cryptographic hashing with hashlib",
@@ -84,8 +84,8 @@
         }
       ],
       "hints": [
-        "SHA-256 produces a 64-character hex digest.",
-        "`len(hashlib.sha256(...).hexdigest())` returns the length."
+        "Hash the bytes with `hashlib.sha256`, get the hex digest, then wrap it in `len()` to count its characters instead of printing it.",
+        "You can measure a hex digest the same way you'd size any string: `digest = hashlib.md5(b\"data\").hexdigest()` then `print(len(digest))`."
       ],
       "lesson": {
         "title": "Hash digest length as an algorithm fingerprint",
@@ -114,9 +114,9 @@
         }
       ],
       "hints": [
-        "Use `base64.b64encode(b\"hello\")` to encode.",
-        "Use `base64.b64decode(...)` to decode back to bytes.",
-        "Call `.decode()` on the bytes to get text."
+        "Run the bytes through `base64.b64encode`, then reverse it with `base64.b64decode`, and finally turn those recovered bytes back into text with `.decode()`.",
+        "The round trip looks like `enc = base64.b64encode(b\"data\")` then `back = base64.b64decode(enc)` to get bytes again.",
+        "Recovered bytes become readable text the same way as in exercise 1: `print(back.decode())`."
       ],
       "lesson": {
         "title": "Base64 encoding: transport-safe representation, not secrecy",
@@ -145,8 +145,8 @@
         }
       ],
       "hints": [
-        "Get the length with `len(h)`.",
-        "Use `if len(h) == 32:` for MD5, `elif len(h) == 40:` for SHA-1, `elif len(h) == 64:` for SHA-256."
+        "Measure the digest with `len(h)`, then branch on that count with an `if`/`elif` chain to print the matching algorithm name.",
+        "An if-elif chain on a length looks like `if size == 10:` ... `elif size == 20:` ... — compare `len(h)` against each digest size and print the name that fits."
       ],
       "lesson": {
         "title": "Identifying hash algorithms by digest length",
@@ -177,9 +177,9 @@
         }
       ],
       "hints": [
-        "Loop over each word in the wordlist.",
-        "Hash it with `hashlib.md5(word.encode()).hexdigest()`.",
-        "Compare the digest to the target; if they match, print and break."
+        "Walk each word in the wordlist, hash it the same way the target was made, and compare that digest to `target` to find the match.",
+        "Inside the loop, hashing a candidate looks like `guess = hashlib.md5(word.encode()).hexdigest()`, then test it with `if guess == target:`.",
+        "When the match is found, print using an f-string like `print(f\"[FOUND] {word}\")` and `break` to stop searching."
       ],
       "lesson": {
         "title": "Dictionary attacks: exploiting hash determinism",

@@ -6,7 +6,7 @@
   "exercises": [
     {
       "id": "w1-e1",
-      "prompt": "Print a two-line banner with a centered title. Line 1: exactly \"========================\". Line 2: exactly \"   Recon Report\". Hints: You will write two print statements.",
+      "prompt": "Print a two-line banner with a centered title. Line 1: exactly \"========================\". Line 2: exactly \"   Recon Report\".",
       "starter": "# Print the banner\n",
       "required": true,
       "checks": [
@@ -14,12 +14,12 @@
           "type": "stdout",
           "mode": "normalized",
           "expected": "========================\n   Recon Report",
-          "label": "prints the exact banner with correct spacing"
+          "label": "Banner prints on two lines with exact spacing"
         }
       ],
       "hints": [
-        "Use two print statements.",
-        "Type the text exactly as shown — spaces matter."
+        "The banner has two lines, so reach for two separate `print()` calls — one per line.",
+        "Everything inside the quotes prints exactly as typed, so keep the leading spaces — e.g. `print(\"   text\")` prints three spaces before the word."
       ],
       "lesson": {
         "title": "Showing output with print()",
@@ -48,7 +48,8 @@
         }
       ],
       "hints": [
-        "An f-string starts with an `f` before the quote: f\"Hello, {name}.\""
+        "First store the text in `name` with `=`, then build the greeting with an f-string that drops `name` in.",
+        "An f-string has an `f` before the quote and variables in braces — like `f\"Welcome, {user}!\"` prints the value of `user`."
       ],
       "lesson": {
         "title": "Variables and f-strings",
@@ -77,8 +78,8 @@
         }
       ],
       "hints": [
-        "Write: ports = 20 + 2",
-        "Then print with an f-string: f\"{ports} ports\""
+        "Add the two numbers and store the result in `ports`, then print `ports` inside an f-string.",
+        "Assign a sum like `total = 5 + 3`, then print it with text using `f\"{total} items\"`."
       ],
       "lesson": {
         "title": "Numbers and arithmetic",
@@ -113,8 +114,8 @@
         }
       ],
       "hints": [
-        "You can join strings: last + \", \" + first",
-        "Or use an f-string: f\"{last}, {first}\""
+        "Decide the order you want the names to print, then place `last` before `first` with a comma and space between them.",
+        "An f-string controls order regardless of how variables were defined — e.g. `f\"{b}, {a}\"` prints `b` first; or join with `+` like `b + \", \" + a`."
       ],
       "lesson": {
         "title": "Assembling strings in order",
@@ -143,8 +144,8 @@
         }
       ],
       "hints": [
-        "Use int() to convert text to a number: count = int(\"443\")",
-        "Then print: print(f\"{count + 1}\")"
+        "The digits are text until you convert them — wrap the string in `int()` so you can do math, then print one more than `count`.",
+        "`int()` turns a digit-string into a number, like `n = int(\"100\")`; then you can compute and print with `print(f\"{n + 5}\")`."
       ],
       "lesson": {
         "title": "Converting text to numbers with int()",
@@ -169,7 +170,8 @@
         }
       ],
       "hints": [
-        "Build it in one line with an f-string: f\"{name} | {role} | {id}\""
+        "Store each fact in its own variable first, then format all three into one line with a single f-string.",
+        "Put each variable in its own braces with the separator as literal text between them — like `f\"{a} | {b} | {c}\"`."
       ],
       "lesson": {
         "title": "Formatting several variables at once",

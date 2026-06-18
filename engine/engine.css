@@ -46,10 +46,28 @@ code { font-family: Consolas, monospace; font-size: .92em; background: #ECEAE1; 
 .controls { margin: .6rem 0; display: flex; gap: .5rem; flex-wrap: wrap; }
 .output { background: var(--cream); padding: .6rem; border-radius: 6px; font-family: Consolas, monospace; white-space: pre-wrap; min-height: 1.5rem; }
 .results { list-style: none; padding: 0; margin: .5rem 0; }
-.results .pass { color: var(--pass); } .results .fail { color: var(--fail); }
+.results li { margin: 0 0 .6rem; }
+.results .pass .check-head { color: var(--pass); } .results .fail .check-head { color: var(--fail); }
+.check-head { font-weight: 600; }
 .exscore { font-weight: 700; margin-top: .3rem; }
 .exscore.passed { color: var(--pass); }
-.hinttext { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; margin: .5rem 0 0; }
+
+/* failure detail: expected-vs-actual diff with visible whitespace */
+.check-detail { margin: .35rem 0 0 1.4rem; color: var(--gray); font-weight: 400; }
+.detail-msg { margin: 0 0 .3rem; }
+.diff { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+@media (max-width: 520px) { .diff { grid-template-columns: 1fr; } }
+.diff-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; color: var(--gray); margin-bottom: .15rem; }
+.diff-pre { background: var(--cream); border: 1px solid #e0ded7; padding: .5rem .6rem; border-radius: 6px; font-family: Consolas, monospace; font-size: .88rem; white-space: pre-wrap; margin: 0; overflow-x: auto; }
+.ws-dot { color: #b9b6aa; }
+.diff-end { color: #b9b6aa; }
+.diff-empty { color: #a09d92; font-style: italic; }
+.diff-note { font-size: .85rem; margin: .35rem 0 0; }
+
+/* progressive, cumulative hints */
+.hintlist { list-style: none; padding: 0; margin: .5rem 0 0; }
+.hintlist li { color: var(--gray); background: #f7f6f1; border-left: 3px solid var(--gold); padding: .5rem .75rem; margin: 0 0 .4rem; border-radius: 0 4px 4px 0; }
+.hint-label { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; color: var(--gold); margin-bottom: .15rem; }
 
 /* nav */
 #stepnav { display: flex; align-items: center; gap: .75rem; border-top: 1px solid #e6e4dd; padding-top: 1rem; }

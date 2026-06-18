@@ -33,8 +33,8 @@
         }
       ],
       "hints": [
-        "`import json` then `data = json.loads(s)` turns the string into a dict.",
-        "Access the value with `data[\"server\"]` and pass it to `print()`."
+        "JSON arrives as text, so use `json.loads` to turn the string into a dict, then look up a key and print it.",
+        "Parse and index like `cfg = json.loads(raw); print(cfg[\"port\"])` — swap in the key the task asks for."
       ],
       "lesson": {
         "title": "Parsing JSON strings with json.loads",
@@ -69,8 +69,8 @@
         }
       ],
       "hints": [
-        "Loop with `for user in users:` — each `user` is a dictionary.",
-        "Inside the loop: `print(user[\"name\"])` prints that user's name."
+        "Walk the list one record at a time with a `for` loop, then pull the field you need out of each dictionary.",
+        "Loop and index like `for host in hosts: print(host[\"ip\"])` — use the loop variable and the key the task names."
       ],
       "lesson": {
         "title": "Looping over a list of dicts",
@@ -105,8 +105,8 @@
         }
       ],
       "hints": [
-        "`r = requests.get(\"http://target/api\")` stores the response object.",
-        "`r.status_code` is an integer; pass it to `print()`."
+        "Send the GET request, hold the response in a variable, then read its `status_code` attribute and print it.",
+        "Capture and inspect like `resp = requests.get(some_url); print(resp.status_code)` — point it at the task's URL."
       ],
       "lesson": {
         "title": "Making HTTP GET requests and reading status codes",
@@ -141,8 +141,8 @@
         }
       ],
       "hints": [
-        "`data = r.json()` parses the response body into a Python dict.",
-        "`data[\"service\"]` is the value you want to print."
+        "Call `.json()` on the response to decode the body into a dict, then index the key the task asks for.",
+        "Decode and read like `body = r.json(); print(body[\"version\"])` — substitute the key you actually need."
       ],
       "lesson": {
         "title": "Parsing a JSON response body",
@@ -183,8 +183,8 @@
         }
       ],
       "hints": [
-        "`data = requests.get(\"http://target/api\").json()` gives you the full dict.",
-        "Loop `data[\"users\"]`; inside the loop `if user[\"role\"] == \"admin\":` then print the name."
+        "Fetch and decode the response, then loop the `\"users\"` list and keep only records whose role matches before printing the name.",
+        "Filter inside the loop like `for h in hosts: if h[\"state\"] == \"open\": print(h[\"port\"])` — compare the field the task specifies."
       ],
       "lesson": {
         "title": "Filtering API results with conditionals",
@@ -215,8 +215,8 @@
         }
       ],
       "hints": [
-        "Keep a counter `count = 0` and add 1 for each user where `user[\"active\"] == True`.",
-        "Print with an f-string: `print(f\"Active users: {count}\")`."
+        "Start a counter at zero, add one each time a user's `\"active\"` field matches the Python boolean `True` (not the string), then report it.",
+        "Tally and format like `n = 0; for h in hosts: if h[\"up\"] == True: n += 1; print(f\"Live hosts: {n}\")` — adapt the field and label."
       ],
       "lesson": {
         "title": "Counting matching items in a list of dicts",

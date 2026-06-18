@@ -8,6 +8,10 @@ import { runExercise } from './lib/runner.mjs';
 
 const $ = (sel) => document.querySelector(sel);
 
+// Bump on every engine/content change. Must match the ?v= on engine.mjs in
+// lab.html; also busts the browser cache for the per-week lab JSON below.
+const VERSION = '4';
+
 const params = new URLSearchParams(location.search);
 const week = String(params.get('week') || '1').padStart(2, '0');
 let stepIndex = Math.max(1, parseInt(params.get('step') || '1', 10) || 1);
@@ -32,6 +36,77 @@ function renderInline(el, text) {
     last = re.lastIndex;
   }
   if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+}
+
+// ---- failure detail rendering (whitespace made visible) ----
+// Build a <pre> where each space shows as a muted middot and the end of the
+// text is marked, so leading-space and missing-blank-line mismatches are
+// obvious — the #1 source of "it looks right but fails" confusion.
+function codeBlock(text) {
+  const pre = document.createElement('pre');
+  pre.className = 'diff-pre';
+  const str = String(text ?? '');
+  if (str === '') {
+    const em = document.createElement('span');
+    em.className = 'diff-empty';
+    em.textContent = '(no output)';
+    pre.appendChild(em);
+    return pre;
+  }
+  for (const ch of str) {
+    if (ch === ' ') {
+      const dot = document.createElement('span');
+      dot.className = 'ws-dot';
+      dot.textContent = '·';
+      pre.appendChild(dot);
+    } else {
+      pre.appendChild(document.createTextNode(ch));
+    }
+  }
+  const end = document.createElement('span');
+  end.className = 'diff-end';
+  end.textContent = '⏎';
+  pre.appendChild(end);
+  return pre;
+}
+
+function renderCheckDetail(detail) {
+  const wrap = document.createElement('div');
+  wrap.className = 'check-detail';
+  if (detail.kind === 'diff') {
+    const grid = document.createElement('div');
+    grid.className = 'diff';
+    const exCol = document.createElement('div');
+    const exLbl = document.createElement('div');
+    exLbl.className = 'diff-label';
+    exLbl.textContent = 'Expected';
+    exCol.append(exLbl, codeBlock(detail.expected));
+    const acCol = document.createElement('div');
+    const acLbl = document.createElement('div');
+    acLbl.className = 'diff-label';
+    acLbl.textContent = 'Your output';
+    acCol.append(acLbl, codeBlock(detail.actual));
+    grid.append(exCol, acCol);
+    wrap.appendChild(grid);
+    const note = document.createElement('p');
+    note.className = 'diff-note';
+    note.textContent = detail.whitespaceOnly
+      ? 'The text matches — check your spaces and blank lines (each · is one space).'
+      : 'Compare the two side by side; each · is one space.';
+    wrap.appendChild(note);
+  } else if (detail.kind === 'text') {
+    const msg = document.createElement('p');
+    msg.className = 'detail-msg';
+    msg.textContent = detail.message;
+    wrap.appendChild(msg);
+    wrap.appendChild(codeBlock(detail.actual));
+  } else if (detail.kind === 'note') {
+    const msg = document.createElement('p');
+    msg.className = 'detail-msg';
+    renderInline(msg, detail.message);
+    wrap.appendChild(msg);
+  }
+  return wrap;
 }
 
 // ---- localStorage progress per week ----
@@ -171,15 +246,28 @@ function renderExercise(step) {
   renderInline(prompt, ex.prompt);
   left.append(kicker, prompt);
   if (ex.hints?.length) {
+    const total = ex.hints.length;
     const hintBtn = document.createElement('button');
     hintBtn.className = 'btn ghost';
-    hintBtn.textContent = 'Hint';
-    const hintText = document.createElement('p');
-    hintText.className = 'hinttext';
-    hintText.hidden = true;
-    let hi = 0;
-    hintBtn.onclick = () => { hintText.hidden = false; renderInline(hintText, ex.hints[Math.min(hi++, ex.hints.length - 1)]); };
-    left.append(hintBtn, hintText);
+    hintBtn.textContent = `Show a hint (1 of ${total})`;
+    const hintList = document.createElement('ol');
+    hintList.className = 'hintlist';
+    let shown = 0;
+    hintBtn.onclick = () => {
+      if (shown >= total) return;
+      const li = document.createElement('li');
+      const lbl = document.createElement('span');
+      lbl.className = 'hint-label';
+      lbl.textContent = `Hint ${shown + 1}`;
+      const body = document.createElement('span');
+      renderInline(body, ex.hints[shown]);
+      li.append(lbl, body);
+      hintList.appendChild(li);
+      shown += 1;
+      if (shown >= total) { hintBtn.textContent = 'All hints shown'; hintBtn.disabled = true; }
+      else hintBtn.textContent = `Show another hint (${shown + 1} of ${total})`;
+    };
+    left.append(hintBtn, hintList);
   }
 
   // right: editor + controls
@@ -221,17 +309,26 @@ function renderExercise(step) {
     for (const cr of checkResults) {
       const li = document.createElement('li');
       li.className = cr.pass ? 'pass' : 'fail';
-      li.textContent = `${cr.pass ? '✓' : '✗'} ${cr.label}`;
+      const head = document.createElement('div');
+      head.className = 'check-head';
+      head.textContent = `${cr.pass ? '✓' : '✗'} ${cr.label}`;
+      li.appendChild(head);
+      if (!cr.pass && cr.detail) li.appendChild(renderCheckDetail(cr.detail));
       results.appendChild(li);
     }
-    const passed = checkResults.every((c) => c.pass) && !r.error;
+    const total = checkResults.length;
+    const passing = checkResults.filter((c) => c.pass).length;
+    const passed = passing === total && !r.error;
     if (passed) {
-      exscore.textContent = 'Solved ✓';
+      exscore.textContent = 'Solved ✓ — all checks passed.';
       exscore.classList.add('passed');
       markPassed(ex.id);
       $('#nav-next')?.classList.add('ready');
+    } else if (r.error) {
+      exscore.textContent = 'Your code raised an error — read the output above, then fix and Check again.';
+      exscore.classList.remove('passed');
     } else {
-      exscore.textContent = 'Not yet — adjust and Check again.';
+      exscore.textContent = `${passing} of ${total} checks passing — see the notes below to close the gap.`;
       exscore.classList.remove('passed');
     }
   };
@@ -288,7 +385,7 @@ function renderNav(step) {
 
 async function boot() {
   try {
-    LAB = await (await fetch(`labs/week-${week}.json`)).json();
+    LAB = await (await fetch(`labs/week-${week}.json?v=${VERSION}`)).json();
   } catch (_) {
     $('#app').textContent = `Could not load the lab for week ${week}.`;
     return;

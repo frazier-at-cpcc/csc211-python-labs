@@ -24,8 +24,8 @@
         }
       ],
       "hints": [
-        "Use `def square(n):` to define it.",
-        "Return the result with `return n*n`."
+        "Start the recipe with a `def` line that names the function and lists its parameter, then use `return` to hand the multiplied value back to whoever calls it.",
+        "A defining-and-returning function looks like `def double(x):` then `return x + x`, and you run it by calling `double(4)`."
       ],
       "lesson": {
         "title": "Defining functions with def and return",
@@ -54,8 +54,8 @@
         }
       ],
       "hints": [
-        "Return `n % 2 == 0` to check if even.",
-        "Print each call directly: `print(is_even(4))` then `print(is_even(7))`."
+        "Let the function answer a yes/no question by returning a comparison directly — the modulo operator `%` gives the remainder, and a remainder test is already a `True`/`False` value.",
+        "A Boolean-returning check looks like `def is_positive(x):` then `return x > 0`, and you print its answer with `print(is_positive(5))`."
       ],
       "lesson": {
         "title": "Boolean-returning functions and the modulo operator",
@@ -84,8 +84,8 @@
         }
       ],
       "hints": [
-        "Start with `import math`.",
-        "Use `math.sqrt()` to get the square root."
+        "Bring in the standard-library module with an `import` line, then reach its square-root function through dot notation on the module name.",
+        "Importing and using a module looks like `import math` then `print(math.pow(2, 5))`, where the function is called as `math.something(...)`."
       ],
       "lesson": {
         "title": "Importing modules from the standard library",
@@ -120,8 +120,8 @@
         }
       ],
       "hints": [
-        "Put `int(\"abc\")` inside a `try:` block.",
-        "Catch `ValueError` with `except ValueError:`."
+        "Put the risky conversion inside a `try:` block so a failure jumps to recovery instead of crashing, then name the specific exception you expect in the `except` clause.",
+        "Guarding a failing operation looks like `try:` then `int(\"xyz\")`, followed by `except ValueError:` then a `print(...)` that reports the problem."
       ],
       "lesson": {
         "title": "Handling errors gracefully with try/except",
@@ -156,8 +156,8 @@
         }
       ],
       "hints": [
-        "Use `line.split()` to break the line into words.",
-        "Return the first element with `[0]`."
+        "Inside the function, use `.split()` to break the line into a list of words, then grab a single word from that list by its index position.",
+        "Splitting then indexing looks like `parts = \"open 22 ssh\".split()` then `return parts[1]`, where the bracket number picks which word you want."
       ],
       "lesson": {
         "title": "String splitting and indexing inside functions",
@@ -188,8 +188,8 @@
         }
       ],
       "hints": [
-        "Split the text by newline with `text.split('\\n')`.",
-        "Return the length of the resulting list."
+        "Split the multi-line string on the newline character to turn it into a list of lines, then measure how many items that list holds.",
+        "Counting pieces of a string looks like `return len(\"a,b,c\".split(\",\"))`, where `split` makes the list and `len` reports its size."
       ],
       "lesson": {
         "title": "Counting lines in a multi-line string",

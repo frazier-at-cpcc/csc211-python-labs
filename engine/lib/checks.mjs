@@ -19,6 +19,45 @@ function typeName(v) {
 
 function deepEqual(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 
+// A short, readable rendering of a JS value for failure messages.
+function showValue(v) {
+  if (v === undefined) return 'undefined';
+  if (typeof v === 'string') return JSON.stringify(v);
+  return JSON.stringify(v);
+}
+
+// Collapse runs of whitespace so we can tell "wrong characters" apart from
+// "right characters, wrong spacing" — drives the whitespaceOnly hint.
+function collapseWs(s) { return normalize(s).replace(/[ \t]+/g, ' '); }
+
+// Build failure `detail` for a check. Returns null on pass, or a structured
+// object the engine renders. checks.mjs stays presentation-free: no markup.
+function failDetail(check, sub) {
+  if (check.type === 'stdout') {
+    if (check.mode === 'regex') {
+      return { kind: 'text', message: "Your output didn't contain what this check looks for.", actual: sub.stdout || '' };
+    }
+    const expected = check.mode === 'exact' ? check.expected : normalize(check.expected);
+    const actual = check.mode === 'exact' ? (sub.stdout || '') : normalize(sub.stdout || '');
+    const whitespaceOnly = collapseWs(expected) === collapseWs(actual);
+    return { kind: 'diff', expected, actual, whitespaceOnly };
+  }
+  if (check.type === 'source') {
+    if (check.assert === 'calls') return { kind: 'note', message: `Your code doesn't call \`${check.value}(...)\` yet.` };
+    if (check.assert === 'defines') return { kind: 'note', message: `Your code doesn't define \`${check.value}\` yet.` };
+    return { kind: 'note', message: `Your code doesn't use \`${check.value}\` yet.` };
+  }
+  if (check.type === 'state') {
+    const g = sub.globals || {};
+    const has = Object.prototype.hasOwnProperty.call(g, check.name);
+    if (!has) return { kind: 'note', message: `\`${check.name}\` isn't defined yet.` };
+    const v = g[check.name];
+    if ('equals' in check) return { kind: 'note', message: `\`${check.name}\` should equal \`${showValue(check.equals)}\`, but it's currently \`${showValue(v)}\`.` };
+    if ('isType' in check) return { kind: 'note', message: `\`${check.name}\` should be a ${check.isType}, but it's currently a ${typeName(v)}.` };
+  }
+  return null;
+}
+
 export function evaluateCheck(check, sub) {
   const label = check.label || check.type;
   let pass = false;
@@ -43,7 +82,7 @@ export function evaluateCheck(check, sub) {
     else if ('isType' in check) pass = has && typeName(v) === check.isType;
     else pass = has;
   }
-  return { pass, label };
+  return { pass, label, detail: pass ? null : failDetail(check, sub) };
 }
 
 export function evaluateChecks(sub, checks) {

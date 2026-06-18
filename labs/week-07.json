@@ -24,8 +24,8 @@
         }
       ],
       "hints": [
-        "Multiply a bytes literal by a number: `b\"A\" * 8`",
-        "Then use `len(buf)` to get its length."
+        "Repeat a bytes literal with `*` to build a filler buffer, then count its octets with the `len()` built-in.",
+        "Repeating multiplies the byte count, like `buf = b\"Z\" * 3` makes 3 bytes, and `print(len(buf))` reports the size."
       ],
       "lesson": {
         "title": "Bytes literals and buffer sizing",
@@ -60,8 +60,8 @@
         }
       ],
       "hints": [
-        "Import struct: `import struct`",
-        "`struct.pack(\"<I\", 1)` packs a 32-bit little-endian integer (always 4 bytes)."
+        "Bring in the `struct` module, then pack a 32-bit little-endian integer with the `\"<I\"` format and measure the result with `len()`.",
+        "The `\"<I\"` format always yields 4 bytes no matter the value, like `len(struct.pack(\"<I\", 255))` is still 4."
       ],
       "lesson": {
         "title": "struct.pack and fixed-width binary integers",
@@ -90,8 +90,8 @@
         }
       ],
       "hints": [
-        "Little-endian means bytes are reversed: `0x625011AF` becomes `af 11 50 62`.",
-        "Use `.hex()` to convert bytes to a hex string: `packed.hex()`"
+        "Little-endian packing reverses an address byte by byte, so pack it with `struct.pack` and inspect the order using the `.hex()` method.",
+        "For a different address `.hex()` shows the reversal, like `struct.pack(\"<I\", 0x11223344).hex()` gives `44332211`."
       ],
       "lesson": {
         "title": "Little-endian byte order and hex representation",
@@ -120,8 +120,8 @@
         }
       ],
       "hints": [
-        "Concatenate bytes with `+`: first 4 A's, then the packed 4 bytes, then 4 C's.",
-        "Total: 4 + 4 + 4 = 12 bytes."
+        "Join your filler, the packed address, and the trailer into one `payload` using the `+` operator, then check the assembled size with `len()`.",
+        "Concatenated sections add their lengths, like `len(b\"X\"*2 + struct.pack(\"<I\", 0) + b\"Y\"*2)` is 8."
       ],
       "lesson": {
         "title": "Payload assembly by bytes concatenation",
@@ -150,8 +150,8 @@
         }
       ],
       "hints": [
-        "The pattern is already built for you; just slice and decode the first 4 bytes.",
-        "`pattern[:4].decode()` converts bytes to a string."
+        "The `pattern` is already built, so slice off the leading bytes you want and turn them into text with the `.decode()` method.",
+        "Slicing then decoding reads a window as a string, like `pattern[2:5].decode()` returns three characters as text."
       ],
       "lesson": {
         "title": "Cyclic patterns and offset identification",
@@ -176,8 +176,8 @@
         }
       ],
       "hints": [
-        "The payload is: filler (offset bytes) + packed EIP (4 bytes).",
-        "Total length: offset + 4."
+        "Build the payload as a filler of `offset` bytes joined to a single packed four-byte EIP stand-in, then report the combined size with `len()`.",
+        "The packed address always adds exactly 4 bytes, like `len(b\"A\"*5 + struct.pack(\"<I\", 0x42424242))` is 9."
       ],
       "lesson": {
         "title": "Composing a staged exploit payload",

@@ -30,9 +30,9 @@
         }
       ],
       "hints": [
-        "Create the parser: `parser = argparse.ArgumentParser()`",
-        "Add the argument: `parser.add_argument(\"--target\")`",
-        "Parse the list: `args = parser.parse_args([\"--target\", \"10.0.0.1\"])` (note: explicit list, not sys.argv)"
+        "Build a parser, declare the `--target` flag on it, then parse the supplied list and print the `target` attribute that comes back.",
+        "The shape is `add_argument` then `parse_args`, like `p.add_argument(\"--host\")` then `args = p.parse_args([\"--host\", \"server.local\"])`.",
+        "In this sandbox always pass an explicit list to `parse_args([...])` rather than letting it read `sys.argv`, then read the value off `args` like `print(args.host)`."
       ],
       "lesson": {
         "title": "Building an ArgumentParser and parsing a flag",
@@ -61,8 +61,8 @@
         }
       ],
       "hints": [
-        "Use `action=\"store_true\"`: `parser.add_argument(\"--verbose\", action=\"store_true\")`",
-        "The flag does not need a value — just include it in the parse list."
+        "An on/off switch flag carries no value of its own — register `--verbose` so that simply appearing in the list flips it on, then print that attribute.",
+        "The switch idiom is `action=\"store_true\"`, like `p.add_argument(\"--debug\", action=\"store_true\")`; just list the flag with no value after it to turn it on."
       ],
       "lesson": {
         "title": "Boolean flags with action=\"store_true\"",
@@ -97,8 +97,8 @@
         }
       ],
       "hints": [
-        "Use `nargs=\"+\"` to accept one or more values.",
-        "Use `type=int` to convert strings to integers: `parser.add_argument(\"--ports\", nargs=\"+\", type=int)`"
+        "Tell the flag to collect several values at once and to convert each one from text into a number before it reaches you, then print the resulting `ports` list.",
+        "Combine `nargs=\"+\"` (one or more) with `type=int`, like `p.add_argument(\"--codes\", nargs=\"+\", type=int)` which would turn `[\"--codes\", \"7\", \"9\"]` into `[7, 9]`."
       ],
       "lesson": {
         "title": "Accepting multiple values with nargs and type conversion",
@@ -127,9 +127,8 @@
         }
       ],
       "hints": [
-        "Define the function first: `def scan(target):`",
-        "Use an f-string inside: `print(f\"scanning {target}\")`",
-        "After parsing, call: `scan(args.target)`"
+        "Keep the two layers separate: write your `scan` function so it works on a plain parameter, then let the parser feed it the value off `args`.",
+        "The wiring looks like `def ping(host): print(f\"pinging {host}\")` and then, after parsing, `ping(args.host)` — call your function with the parsed attribute."
       ],
       "lesson": {
         "title": "Routing parsed arguments into functions",
@@ -158,9 +157,8 @@
         }
       ],
       "hints": [
-        "Call `help_text = parser.format_help()`",
-        "Print it: `print(help_text)`",
-        "`format_help()` returns the auto-generated help string."
+        "The parser can build its own usage screen from the metadata you gave it — grab that text as a string and print it so the flag name appears in the output.",
+        "`format_help()` returns the help text without printing, so the pattern is `text = p.format_help()` then `print(text)` — much like `print(p.format_help())`."
       ],
       "lesson": {
         "title": "Auto-generated help text with format_help()",
@@ -191,9 +189,9 @@
         }
       ],
       "hints": [
-        "Use `choices=[\"recon\", \"scan\"]`: `parser.add_argument(\"--mode\", choices=[\"recon\", \"scan\"])`",
-        "After parsing, check `args.mode` and call the appropriate function.",
-        "Use an if/elif block: `if args.mode == \"scan\": scan(args.target)`"
+        "Restrict `--mode` so the parser only accepts your two allowed words, then branch on the parsed mode to call the matching function with the target.",
+        "Limit values with `choices`, like `p.add_argument(\"--level\", choices=[\"low\", \"high\"])`, which rejects anything outside that set automatically.",
+        "Dispatch with a simple branch on the attribute, like `if args.level == \"high\": go_fast(args.host)` — compare and route to the right call."
       ],
       "lesson": {
         "title": "Restricting argument values with choices",

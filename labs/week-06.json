@@ -39,9 +39,9 @@
         }
       ],
       "hints": [
-        "Start with `class LoginSession:` then indent `def __init__(self, host, user):` beneath it.",
-        "Inside `__init__`, write `self.host = host` and `self.user = user` to save the values.",
-        "Create an instance: `s = LoginSession(\"10.20.0.30\", \"admin\")`, then `print(s.host)`."
+        "Build a class with an `__init__` method that copies each parameter onto `self` so the session object remembers its target.",
+        "The shape looks like `class Device:` then an indented `def __init__(self, ip, port):` whose body does `self.ip = ip`.",
+        "Create an object by calling the class like a function — `d = Device(\"127.0.0.1\", 80)` — then read a stored value with dot notation like `print(d.ip)`."
       ],
       "lesson": {
         "title": "Defining a class with __init__",
@@ -76,9 +76,9 @@
         }
       ],
       "hints": [
-        "In `__init__`, add `self.attempts = 0` after the other attributes.",
-        "Define `def try_login(self, pw):` inside the class (indented), and write `self.attempts += 1` inside it.",
-        "After creating `s`, call `s.try_login(\"abc\")` twice, then `print(s.attempts)`."
+        "Give the object a counter attribute starting at zero in `__init__`, then add a method that bumps that counter up by one each time it runs.",
+        "Initialize with `self.count = 0`, and inside a method use the `+= 1` shorthand, like `self.count += 1`.",
+        "Methods are functions defined inside the class with `self` first, such as `def visit(self):` — call one on an object the same way you read an attribute, with dot notation."
       ],
       "lesson": {
         "title": "Methods that update object state",
@@ -113,9 +113,9 @@
         }
       ],
       "hints": [
-        "In `__init__`, add `self.cracked = False`.",
-        "Inside `try_login`, add `if pw == \"sunshine\": self.cracked = True`.",
-        "After `s.try_login(\"sunshine\")`, print `s.cracked` — it should be `True`."
+        "Start a boolean flag at `False` in `__init__`, then flip it to `True` inside the method only when the password argument matches the target.",
+        "Use `==` to compare (not `=`), like `if word == \"hunter2\": self.found = True` — the flag stays `False` until that test passes.",
+        "Remember `==` tests equality while `=` assigns, so the condition checks the value while the line inside it stores the new flag."
       ],
       "lesson": {
         "title": "Conditional state change inside a method",
@@ -150,8 +150,8 @@
         }
       ],
       "hints": [
-        "Loop with `for pw in passwords:` and call `s.try_login(pw)` inside.",
-        "Check `if s.cracked:` after the call, then `print(pw)` and `break`."
+        "Walk the list one item at a time, feed each candidate to the session's method, and stop as soon as the success flag turns on so the loop variable still holds the winner.",
+        "The pattern is `for item in items:` then test a condition and `break`, like `if obj.done: print(item); break` to exit the moment it succeeds."
       ],
       "lesson": {
         "title": "Driving a class from a loop with early exit",
@@ -186,8 +186,8 @@
         }
       ],
       "hints": [
-        "`result = subprocess.run([\"whoami\"], capture_output=True, text=True)` runs the command.",
-        "`result.stdout` holds the output string; call `.strip()` to remove the trailing newline before printing."
+        "Call `subprocess.run` with the command in a list plus `capture_output=True` and `text=True`, then read the result's output attribute and trim its trailing newline.",
+        "The call returns an object you save, like `r = subprocess.run([\"hostname\"], capture_output=True, text=True)`, and `r.stdout.strip()` gives a clean string to print."
       ],
       "lesson": {
         "title": "Capturing program output with subprocess",
@@ -218,8 +218,8 @@
         }
       ],
       "hints": [
-        "After breaking the loop, `s.attempts` holds the total tries.",
-        "Print with an f-string: `print(f\"Recovered in {s.attempts} attempt(s)\")`."
+        "The session already counted every try, so after the loop breaks read its attempts attribute instead of keeping your own tally.",
+        "Drop the attribute into an f-string with surrounding text, like `print(f\"Done in {obj.tries} step(s)\")`, to build the report line."
       ],
       "lesson": {
         "title": "Reading object state after a loop",

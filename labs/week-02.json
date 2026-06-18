@@ -24,8 +24,8 @@
         }
       ],
       "hints": [
-        "A for loop visits each item: `for h in hosts:`",
-        "Indent the `print(h)` under the loop."
+        "Use a `for` loop to visit each host in turn, and `print()` the loop variable on every pass.",
+        "A loop walks a list like `for item in services:` then runs an indented `print(item)` for each one."
       ],
       "lesson": {
         "title": "Iterating a list with a for loop",
@@ -64,8 +64,8 @@
         }
       ],
       "hints": [
-        "`hosts.append(\"ftp.x.com\")` adds to the end.",
-        "`len(hosts)` returns the count."
+        "Add the new host to the end of `hosts` with the `append()` method, then count the list with `len()` and print that number.",
+        "Append to a list like `findings.append(\"10.0.0.9\")`, and get its size with `len(findings)`."
       ],
       "lesson": {
         "title": "Growing a list with append() and measuring it with len()",
@@ -100,7 +100,8 @@
         }
       ],
       "hints": [
-        "`if \"dev\" in host:` is true when the text appears in the host."
+        "Inside the loop, print every host, but use an `if` with the `in` operator to test whether the flag word appears in the current host before adding the review marker.",
+        "Check for a substring like `if \"staging\" in host:` then `print(f\"{host}  <-- insecure\")` only for those that match."
       ],
       "lesson": {
         "title": "Filtering items with if and the in operator",
@@ -132,8 +133,8 @@
         }
       ],
       "hints": [
-        "A dict literal: `profile = {\"domain\": \"x.com\", \"registrar\": \"ACME\"}`",
-        "Index by key: `profile[\"registrar\"]`."
+        "Build `profile` as a dictionary with curly braces, giving each fact its own key, then look up one value by its key name to print it.",
+        "A dict pairs labels with values like `host = {\"ip\": \"10.0.0.5\", \"asn\": \"AS15133\"}`, and you read one back with `host[\"asn\"]`."
       ],
       "lesson": {
         "title": "Dictionaries: labeled storage for structured findings",
@@ -162,8 +163,8 @@
         }
       ],
       "hints": [
-        "Loop the list with: for sub in profile[\"subdomains\"]:",
-        "Reach the list with `profile[\"subdomains\"]`, then loop it."
+        "First reach the inner list by its key, then run a `for` loop over that list so each item prints on its own line.",
+        "Loop a list nested in a dict like `for server in record[\"mx_records\"]:` then `print(server)` for each one."
       ],
       "lesson": {
         "title": "Nesting lists inside dictionaries",
@@ -188,7 +189,8 @@
         }
       ],
       "hints": [
-        "Keep a counter starting at 0 and add 1 inside the if."
+        "Set a counter to `0` before the loop, add `1` to it inside an `if` whenever a host matches any flag word, then print the total with an f-string.",
+        "Test several keywords at once with `or`, like `if \"old\" in name or \"beta\" in name:`, increment with `count += 1`, and report it as `f\"Found {count} item(s)\"`."
       ],
       "lesson": {
         "title": "Counting matches with a loop counter",
