@@ -96,11 +96,13 @@ function exampleBlock(lesson) {
 
 function renderLesson(step) {
   const app = $('#app');
-  app.className = 'app lesson-view';
+  app.className = 'app split lesson-split';
   app.innerHTML = '';
   const lesson = step.ex.lesson || { title: 'Concept', body: step.ex.prompt };
+
+  // left: lesson card
   const card = document.createElement('section');
-  card.className = 'lesson-card';
+  card.className = 'pane lesson-card';
   const kicker = document.createElement('p');
   kicker.className = 'kicker';
   kicker.textContent = 'Lesson';
@@ -119,7 +121,38 @@ function renderLesson(step) {
   cta.href = href(stepIndex + 1);
   cta.textContent = 'Start the challenge →';
   card.appendChild(cta);
-  app.appendChild(card);
+
+  // right: live sandbox — prefilled with the lesson example so students can
+  // immediately run and tweak what they just read. No checks/grading here.
+  const right = document.createElement('section');
+  right.className = 'pane workspace sandbox';
+  right.innerHTML = `
+    <p class="kicker">Sandbox</p>
+    <p class="sandbox-hint">Experiment freely — edit the code and run it. Nothing here is graded.</p>
+    <div class="editor"></div>
+    <div class="controls">
+      <button class="run" disabled>Run ▶</button>
+      <button class="reset btn ghost" type="button">Reset</button>
+    </div>
+    <pre class="output" aria-live="polite"></pre>`;
+  const starter = lesson.example || '# Try it out — write some Python and press Run\n';
+  const ta = document.createElement('textarea');
+  ta.value = starter;
+  right.querySelector('.editor').appendChild(ta);
+  app.append(card, right);
+
+  const cm = window.CodeMirror.fromTextArea(ta, { mode: 'python', lineNumbers: true, indentUnit: 4 });
+  requestAnimationFrame(() => cm.refresh());
+
+  const out = right.querySelector('.output');
+  async function run() {
+    out.textContent = 'Running…';
+    const r = await runExercise(pyodide, cm.getValue(), []);
+    out.textContent = r.error ? `${r.stdout}\n${r.error}` : (r.stdout || '(no output)');
+  }
+  right.querySelector('.run').onclick = run;
+  right.querySelector('.reset').onclick = () => { cm.setValue(starter); out.textContent = ''; };
+  return { cm, enable: () => { right.querySelector('.run').disabled = false; } };
 }
 
 function renderExercise(step) {
@@ -267,21 +300,20 @@ async function boot() {
   renderWeekBar();
   renderNav(step);
 
-  if (step.kind === 'lesson') {
-    renderLesson(step);
-    return; // no Python needed on lesson pages
-  }
+  const view = step.kind === 'lesson' ? renderLesson(step) : renderExercise(step);
 
-  const ex = renderExercise(step);
+  // Both lesson sandboxes and challenges run Python in-browser via Pyodide.
   const statusEl = $('#status');
   statusEl.hidden = false;
-  statusEl.textContent = 'Python loading… (first challenge fetches the interpreter; a few seconds)';
+  statusEl.textContent = step.kind === 'lesson'
+    ? 'Python loading… the sandbox will be ready in a few seconds.'
+    : 'Python loading… (first challenge fetches the interpreter; a few seconds)';
   pyodide = await window.loadPyodide();
   if (Array.isArray(LAB.preload)) {
     for (const mod of LAB.preload) await pyodide.runPythonAsync(mod);
   }
   statusEl.textContent = 'Python ready.';
-  ex.enable();
+  view.enable();
 }
 
 boot();
